@@ -1,0 +1,70 @@
+﻿@model IEnumerable<PetShop.Models.Purchase>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Purchase History</h2>
+
+@if (this.User.Identity.IsAuthenticated && (!this.User.IsInRole("manager")))
+{
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
+}
+
+@if (Model?.Count() == 0)
+{
+    <p>
+        No purchases yet. Press "New Purchase" button to create a purchase.
+    </p>
+}
+else
+{
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CheckNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalSum)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Employee)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Customer)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CheckNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalSum)
+                </td>
+                <td>
+                    @String.Format("{0} {1}", item.Employee.Name, item.Employee.Surname)
+                </td>
+                <td>
+                    @String.Format("{0} {1}", item.Customer?.Name, item.Customer?.Surname)
+                </td>
+                <td>
+                    @Html.ActionLink("Details", "Details", new { id = item.PurchaseId })
+                    @{
+                        if (this.User.Identity.IsAuthenticated && (this.User.IsInRole("admin")))
+                        {
+                            @Html.ActionLink("Delete", "Delete", new { id = item.PurchaseId })
+                        }
+                    }
+                </td>
+            </tr>
+        }
+
+    </table>
+
+}

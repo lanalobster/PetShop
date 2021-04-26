@@ -1,0 +1,93 @@
+﻿@model PetShop.Models.Purchase
+
+<h2>@String.Format("Receipt: ", Model.CheckNumber)</h2>
+
+<p>Created on: @Model.CreatedOn</p>
+<p>Cashier: @String.Format("{0} {1}", Model.Employee.Name, Model.Employee.Surname)</p>
+
+<table class="table">
+    <tr>
+        <th>
+            Item
+        </th>
+        <th>
+            Quantity
+        </th>
+        <th>
+            Price (per item)
+        </th>
+        <th>
+            Sale (%)
+        </th>
+        <th>
+            Subtotal
+        </th>
+    </tr>
+    @foreach (var itemInPurchase in Model.ItemInPurchase)
+    {
+        <tr>
+            <td>
+                @itemInPurchase.ItemInStore.Item.Name
+            </td>
+            <td>
+                @itemInPurchase.Quantity
+            </td>
+            <td>
+                @itemInPurchase.ItemInStore.Item.Price
+            </td>
+            <td>
+                @{
+                    var sale = itemInPurchase.ItemInStore.Item.GetCurrentSale();
+                    var percentage = sale != null ? sale.Percentage : 0;
+                }
+                @percentage
+            </td>
+            <td>
+                @{
+                    double subtotal = itemInPurchase.Quantity * itemInPurchase.ItemInStore.Item.Price;
+                    if (percentage != 0)
+                    {
+                        subtotal = subtotal - (subtotal * percentage / 100.0);
+                    }
+
+                }
+                @string.Format("{0:0.00}", subtotal)
+            </td>
+        </tr>
+    }
+    @if (Model.Customer != null)
+    {
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Customer:</td>
+            <td>
+                @String.Format("{0} {1}", Model.Customer.Name, Model.Customer.Surname)
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Bonuses:</td>
+            <td>
+                @String.Format("{0}(uah) / {1}(%)", Model.Customer.Bonuses, Model.Customer.GetCustomerBonusPercentage())
+            </td>
+        </tr>
+
+    }
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>Total:</td>
+        <td>
+            @String.Format("{0: 0.00}", Model.TotalSum)
+        </td>
+    </tr>
+</table>
+
+<div>
+    @Html.ActionLink("Go Back", "Index", "Purchases")
+</div>

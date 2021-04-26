@@ -1,0 +1,95 @@
+﻿@model IEnumerable<PetShop.Models.Item>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Price)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Volume)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Animal)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Brand)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ItemSubcategory.ItemCategory)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ItemSubcategory)
+        </th>
+        @if (this.User.Identity.IsAuthenticated && (!this.User.IsInRole("cashier")))
+        {
+            <th></th>
+        }
+
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Volume)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Animal.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Brand.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemSubcategory.ItemCategory.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemSubcategory.Name)
+            </td>
+            @if (this.User.Identity.IsAuthenticated && (!this.User.IsInRole("cashier")))
+            {
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ItemId }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.ItemId }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ItemId })
+                </td>
+            }
+
+        </tr>
+    }
+
+</table>
+
+@{ var numberOfPages = ViewBag.NumberOfPages;
+    var currentPage = ViewBag.Currentpage;}
+<div class="center">
+    <div class="pagination">
+        @if (currentPage > 1)
+        {
+            @Ajax.ActionLink("<<", "Search", new { page = currentPage - 1, name = ViewBag.SearchString }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "items" });
+        }
+        @for (int i = 0; i < numberOfPages; ++i)
+        {
+            @Ajax.ActionLink((i + 1).ToString(), "Search", new { page = i + 1, name = ViewBag.SearchString },
+                 new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "items" }, i + 1 == currentPage ? new { @class = "active" } : null);
+        }
+        @if (currentPage < numberOfPages)
+        {
+            @Ajax.ActionLink(">>", "Search", new { page = currentPage + 1, name = ViewBag.SearchString }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "items" });
+        }
+    </div>
+</div>

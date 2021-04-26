@@ -1,0 +1,158 @@
+﻿@model PetShop.Models.ViewModels.PurchaseViewModel
+
+<script type="text/javascript" charset="utf-8" src="https://www.zoonman.com/projects/combobox/combobox.js"></script>
+
+<h2>New Purchase</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            Item
+        </th>
+        <th>
+            Quantity
+        </th>
+        <th>
+            Price (per item)
+        </th>
+        <th>
+            Sale (%)
+        </th>
+        <th>
+            Subtotal
+        </th>
+        <th></th>
+    </tr>
+    @foreach (var itemInPurchase in Model.ItemsInPurchase)
+    {
+        <tr>
+            <td>
+                @itemInPurchase.ItemInStore.Item.Name
+            </td>
+            <td>
+                @itemInPurchase.Quantity
+            </td>
+            <td>
+                @itemInPurchase.ItemInStore.Item.Price
+            </td>
+            <td>
+                @{
+                    var sale = itemInPurchase.ItemInStore.Item.GetCurrentSale();
+                    var percentage = sale != null ? sale.Percentage : 0;
+                }
+                @percentage
+            </td>
+            <td>
+                @{
+                    double subtotal = itemInPurchase.Quantity * itemInPurchase.ItemInStore.Item.Price;
+                    if (percentage != 0)
+                    {
+                        subtotal = subtotal - (subtotal * percentage / 100.0);
+                    }
+
+                }
+                @string.Format("{0:0.00}", subtotal)
+            </td>
+            <td>
+                @Ajax.ActionLink("Remove", "RemoveItem", new { itemName = itemInPurchase.ItemInStore.Item.Name }, new AjaxOptions { UpdateTargetId = "body-content" })
+            </td>
+        </tr>
+    }
+    @if (Model.ChosenCustomer != null)
+    {
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Customer:</td>
+            <td>
+                @String.Format("{0} {1}", Model.ChosenCustomer.Name, Model.ChosenCustomer.Surname)
+                @Ajax.ActionLink("Change", "AddCustomer", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton" })
+                @Ajax.ActionLink("Remove", "RemoveCustomer", new { }, new AjaxOptions { UpdateTargetId = "body-content" })
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Bonuses:</td>
+            <td>
+                @String.Format("{0}(uah) / {1}(%)", Model.ChosenCustomer.Bonuses, Model.ChosenCustomer.GetCustomerBonusPercentage())
+            </td>
+        </tr>
+
+    }
+    @if (Model.ItemsInPurchase.Count() > 0)
+    {
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Total:</td>
+            <td>
+                @String.Format("{0: 0.00}", Model.GetTotalSum())
+            </td>
+        </tr>
+
+    }
+
+</table>
+
+    @if (Model.ChosenCustomer == null)
+    {
+        @Ajax.ActionLink("Add Customer", "AddCustomer", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton" })
+    }
+
+    @Ajax.ActionLink("Add Item", "AddItem", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "myBtn" })
+
+
+    <div id="myModal" class="modal">
+        @if (Model.ItemErrorMessages?.Count > 0)
+        {
+            @RenderPage("AddItem.cshtml", Model)
+        }
+        @if (Model.CustomerErrorMessages?.Count > 0)
+        {
+            @RenderPage("AddCustomer.cshtml", Model)
+        }
+    </div>
+
+    @if (Model.ItemsInPurchase.Count() > 0)
+    {
+        <div>
+            @Ajax.ActionLink("Finish", "Create", new AjaxOptions{ HttpMethod= "POST", UpdateTargetId= "body-content" });
+        </div>
+    }
+
+    <div>
+        <button onclick="showConfirmationWindow()">Cancel</button>
+    </div>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+    <script>
+    var modal = document.getElementById("myModal");
+    var btn = document.getElementById("myBtn");
+    var registerButton = document.getElementById("customerButton");
+    var span = document.getElementsByClassName("close")[0];
+
+    registerButton.onclick = function () {
+        modal.style.display = "block";
+    }
+
+    btn.onclick = function () {
+        modal.style.display = "block";
+    }
+
+    if (@Model.ItemErrorMessages.Count() > 0 || @Model.CustomerErrorMessages.Count() > 0) {
+        modal.style.display = "block";
+    }
+    function showConfirmationWindow() {
+        var result = confirm("Your changes won't be saved. Are you sure you want to exit?");
+        if (result == true) {
+            window.location.href = "Index";
+        }
+    }
+</script>

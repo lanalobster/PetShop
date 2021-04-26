@@ -1,0 +1,132 @@
+﻿@model PetShop.Models.ViewModels.OrderViewModel
+
+<h2>New Order</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            Item
+        </th>
+        <th>
+            Quantity
+        </th>
+        <th>
+            Price (per item)
+        </th>
+        <th>
+            Subtotal
+        </th>
+        <th></th>
+    </tr>
+    @foreach (var itemInOrder in Model.ItemsInOrder)
+    {
+        <tr>
+            <td>
+                @itemInOrder.Item.Name
+            </td>
+            <td>
+                @itemInOrder.Quantity
+            </td>
+            <td>
+                @itemInOrder.Price
+            </td>
+            <td>
+                @{
+                    double subtotal = itemInOrder.Quantity * itemInOrder.Price;
+                }
+                @string.Format("{0:0.00}", subtotal)
+            </td>
+            <td>
+                @Ajax.ActionLink("Remove", "RemoveItem", new { itemName = itemInOrder.Item.Name }, new AjaxOptions { UpdateTargetId = "body-content" })
+            </td>
+        </tr>
+    }
+    @if (Model.ChosenSupplier != null)
+    {
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Supplier:</td>
+            <td>
+                @String.Format("{0} {1}", Model.ChosenSupplier.Name, Model.ChosenSupplier.Surname)
+                @Ajax.ActionLink("Change", "AddSupplier", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton" })
+                @Ajax.ActionLink("Remove", "RemoveSupplier", new { }, new AjaxOptions { UpdateTargetId = "body-content" })
+            </td>
+        </tr>
+
+    }
+    @if (Model.ItemsInOrder.Count() > 0)
+    {
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Total:</td>
+            <td>
+                @String.Format("{0: 0.00}", Model.GetTotalSum())
+            </td>
+        </tr>
+
+    }
+
+</table>
+
+@if (Model.ChosenSupplier == null)
+{
+    @Ajax.ActionLink("Add Supplier", "AddSupplier", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton" })
+}
+
+@Ajax.ActionLink("Add Item", "AddItem", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "myBtn" })
+
+
+<div id="myModal" class="modal">
+    @if (Model.ItemErrorMessages?.Count > 0)
+    {
+        @RenderPage("AddItem.cshtml", Model)
+    }
+    @if (Model.SupplierErrorMessages?.Count > 0)
+    {
+        @RenderPage("AddSupplier.cshtml", Model)
+    }
+</div>
+
+@if (Model.ItemsInOrder.Count() > 0)
+{
+    <div>
+        @Ajax.ActionLink("Finish", "Create", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "body-content" });
+    </div>
+}
+
+<div>
+    <button onclick="showConfirmationWindow()">Cancel</button>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script>
+    var modal = document.getElementById("myModal");
+    var btn = document.getElementById("myBtn");
+    var registerButton = document.getElementById("customerButton");
+    var span = document.getElementsByClassName("close")[0];
+
+    registerButton.onclick = function () {
+        modal.style.display = "block";
+    }
+
+    btn.onclick = function () {
+        modal.style.display = "block";
+    }
+
+    if (@Model.ItemErrorMessages.Count() > 0 || @Model.SupplierErrorMessages.Count() > 0) {
+        modal.style.display = "block";
+    }
+    function showConfirmationWindow() {
+        var result = confirm("Your changes won't be saved. Are you sure you want to exit?");
+        if (result == true) {
+            window.location.href = "Index";
+        }
+    }
+</script>
