@@ -13,6 +13,8 @@ namespace PetShop.Models.ViewModels
         public List<StockedItem> StockedItems { get; set; } = new List<StockedItem>();
         public List<Supplier> Suppliers { get; set; } = new List<Supplier>();
         public Supplier ChosenSupplier { get; set; }
+        public List<Store> Stores { get; set; } = new List<Store>();
+        public Store ChosenStore { get; set; }
         public List<string> ItemErrorMessages { get; set; } = new List<string>();
         public List<string> SupplierErrorMessages { get; set; } = new List<string>();
 
@@ -21,7 +23,7 @@ namespace PetShop.Models.ViewModels
             double total = 0;
             foreach (var itemInOrder in this.ItemsInOrder)
             {
-                double subtotal = itemInOrder.Quantity * itemInOrder.Price;
+                double subtotal = (double)(itemInOrder.Quantity * itemInOrder.Price ?? 0);
                 total += subtotal;
             }
             return total;

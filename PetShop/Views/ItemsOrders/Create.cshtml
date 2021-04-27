@@ -32,7 +32,7 @@
             </td>
             <td>
                 @{
-                    double subtotal = itemInOrder.Quantity * itemInOrder.Price;
+                    double subtotal = itemInOrder.Quantity * (double)(itemInOrder.Price ?? 0);
                 }
                 @string.Format("{0:0.00}", subtotal)
             </td>
@@ -51,7 +51,20 @@
             <td>
                 @String.Format("{0} {1}", Model.ChosenSupplier.Name, Model.ChosenSupplier.Surname)
                 @Ajax.ActionLink("Change", "AddSupplier", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton" })
-                @Ajax.ActionLink("Remove", "RemoveSupplier", new { }, new AjaxOptions { UpdateTargetId = "body-content" })
+            </td>
+        </tr>
+
+    }
+    @if (Model.ChosenStore != null)
+    {
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Store:</td>
+            <td>
+                @String.Format("{0}", Model.ChosenStore.Street)
+                @Ajax.ActionLink("Change", "AddStore", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "storeButton" })
             </td>
         </tr>
 
@@ -77,6 +90,11 @@
     @Ajax.ActionLink("Add Supplier", "AddSupplier", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton" })
 }
 
+@if (Model.ChosenStore == null)
+{
+    @Ajax.ActionLink("Add Store", "AddStore", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "storeButton" })
+}
+
 @Ajax.ActionLink("Add Item", "AddItem", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "myBtn" })
 
 
@@ -91,7 +109,7 @@
     }
 </div>
 
-@if (Model.ItemsInOrder.Count() > 0)
+@if (Model.ItemsInOrder.Count() > 0 && Model.ChosenSupplier != null && Model.ChosenStore != null)
 {
     <div>
         @Ajax.ActionLink("Finish", "Create", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "body-content" });
@@ -110,6 +128,7 @@
     var modal = document.getElementById("myModal");
     var btn = document.getElementById("myBtn");
     var registerButton = document.getElementById("customerButton");
+    var storeButton = document.getElementById("storeButton");
     var span = document.getElementsByClassName("close")[0];
 
     registerButton.onclick = function () {
@@ -117,6 +136,10 @@
     }
 
     btn.onclick = function () {
+        modal.style.display = "block";
+    }
+
+    storeButton.onclick = function () {
         modal.style.display = "block";
     }
 

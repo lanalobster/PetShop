@@ -37,6 +37,21 @@ namespace PetShop.Controllers
         }
 
         [HttpGet]
+        public ActionResult AddStore()
+        {
+            return PartialView(currentOrder);
+        }
+
+        [HttpPost]
+        public ActionResult AddStore(int storeId)
+        {
+            var store = db.Stores.Where(st => st.StoreId == storeId).FirstOrDefault();
+            currentOrder.ChosenStore = store;
+            return View("Create", currentOrder);
+        }
+
+
+        [HttpGet]
         public ActionResult AddItem()
         {
             return PartialView(currentOrder);
@@ -64,11 +79,12 @@ namespace PetShop.Controllers
             var item = db.Items.Where(i => i.Name.ToLower() == itemName.ToLower()).FirstOrDefault();
             if(item == null)
             {
-                currentOrder.ItemErrorMessages.Add("No such item in catalogue: " + item + ". Press register to register a new item.");
+                currentOrder.ItemErrorMessages.Add("No such item in catalogue: " + item + ".");
+                currentOrder.ItemErrorMessages.Add("No such item in catalogue: " + item + ".");
                 return View("Create", currentOrder);
             }
 
-            itemInOrder = new ItemInOrder() { Item = item, Quantity = quantity ?? 0, CreatedOn = DateTime.Now, Price = Convert.ToInt32(price)};
+            itemInOrder = new ItemInOrder() { Item = item, Quantity = quantity ?? 0, CreatedOn = DateTime.Now, Price = (decimal?)price };
             currentOrder.ItemsInOrder.Add(itemInOrder);
             return View("Create", currentOrder);
         }
@@ -118,20 +134,104 @@ namespace PetShop.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult RegisterSupplier([Bind(Include = "Name,Surname,DateOfBirth,EmailAddress,PhoneNumber, Street,CityId")] Customer customer)
-        {
-            //customer.CreatedOn = DateTime.UtcNow;
-            //if (ModelState.IsValid)
-            //{
-            //    currentPurchase.ChosenCustomer = customer;
-            //    return View("Create", currentPurchase);
-            //}
+        public ActionResult RegisterSupplier([Bind(Include = "Name,Surname,DateOfBirth,EmailAddress,PhoneNumber, Street,CityId")] Supplier supplier)
+        {         
+            if (ModelState.IsValid)
+            {
+                supplier.CreatedOn = DateTime.UtcNow;
+                currentOrder.ChosenSupplier = supplier;
+                return View("Create", currentOrder);
+            }
 
-            ViewBag.CityId = new SelectList(db.Cities, "CityId", "Name", customer.CityId);
-            return View(customer);
+            ViewBag.CityId = new SelectList(db.Cities, "CityId", "Name", supplier.CityId);
+            return View(supplier);
         }
 
-        // GET: ItemsOrders/Details/5
+        public ActionResult Create()
+        {
+            var suppliers = db.Suppliers.ToList();
+            var items = db.Items.ToList();
+            var stores = db.Stores.ToList();
+            currentOrder = currentOrder ?? new OrderViewModel() { Suppliers = suppliers, Items = items, Stores = stores };
+            currentOrder.ItemErrorMessages.Clear();
+            currentOrder.SupplierErrorMessages.Clear();
+            return View(currentOrder);
+        }
+
+        [HttpPost]
+        public ActionResult Create(ItemsOrder itemsOrder)
+        {
+            var orderToAdd = new ItemsOrder();
+            var date = DateTime.UtcNow.Date;
+            orderToAdd.Store = currentOrder.ChosenStore;
+            orderToAdd.CreatedOn = DateTime.UtcNow;
+            orderToAdd.Employee = db.Employees.Where(e => e.EmailAddress == User.Identity.Name).FirstOrDefault();
+            orderToAdd.TotalSum = (decimal?)currentOrder.GetTotalSum();
+            if (currentOrder.ChosenSupplier?.SupplierId == 0)
+            {
+                currentOrder.ChosenSupplier = db.Suppliers.Add(currentOrder.ChosenSupplier);
+            }
+            orderToAdd.Supplier = currentOrder.ChosenSupplier;
+            var addedOrder = db.ItemsOrders.Add(orderToAdd);
+            foreach (var itemInOrder in currentOrder.ItemsInOrder)
+            {
+                itemInOrder.ItemsOrder = addedOrder;
+                db.ItemInOrders.Add(itemInOrder);
+                db.SaveChanges();
+            }
+            db.SaveChanges();
+            currentOrder = null;
+            ViewBag.Status = "Not completed";
+            return View("Details", addedOrder);
+        }
+
+        [HttpPost]
+        public ActionResult Complete(int itemsOrderId)
+        {
+            var employee = db.Employees.Where(e => e.EmailAddress == User.Identity.Name).FirstOrDefault();
+            var order = db.ItemsOrders.Where(io => io.ItemsOrderId == itemsOrderId).FirstOrDefault();
+            foreach (var itemInOrder in order.ItemInOrder)
+            {
+                var stockedItem = new StockedItem()
+                {
+                    CreatedOn = DateTime.UtcNow,
+                    ItemInOrder = itemInOrder,
+                    Employee = employee,
+                    Quantity = itemInOrder.Quantity,
+                };
+                db.StockedItems.Add(stockedItem);
+                db.SaveChanges();
+            }
+            ViewBag.Status = "Finishing up";
+            return View("Details", order);
+        }
+
+        [HttpGet]
+         public ActionResult EditQuantity(int itemInOrderId)
+        {
+            var stockedItem = db.StockedItems.Where(si => si.ItemInOrderId == itemInOrderId).FirstOrDefault();
+            if (stockedItem == null)
+            {
+                return HttpNotFound();
+            }
+            return View(stockedItem);
+         }
+
+        [HttpPost]
+        public ActionResult EditQuantity(int stockedItemid, int quantity)
+        {
+            var stockedItem = db.StockedItems.Where(si => si.StockedItemId == stockedItemid).FirstOrDefault();
+            if (stockedItem == null)
+            {
+                return HttpNotFound();
+            }
+            stockedItem.Quantity = quantity;
+            db.SaveChanges();
+            ViewBag.Status = "Finishing up";
+            var order = db.ItemsOrders.Where(io => io.ItemsOrderId == stockedItem.ItemInOrder.ItemsOrderId).FirstOrDefault();
+            return View("Details", order);
+        }
+
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -143,37 +243,10 @@ namespace PetShop.Controllers
             {
                 return HttpNotFound();
             }
+            var completed = itemsOrder.ItemInOrder.All(io => io.StockedItem?.Count() > 0);
+            ViewBag.Status = completed ? "Completed" : "Not completed";
             return View(itemsOrder);
         }
-
-        // GET: ItemsOrders/Create
-        public ActionResult Create()
-        {
-            var suppliers = db.Suppliers.ToList();
-            var items = db.Items.ToList();
-            currentOrder = currentOrder ?? new OrderViewModel() { Suppliers = suppliers, Items = items };
-            return View(currentOrder);
-        }
-
-        // POST: ItemsOrders/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "TotalSum,CreatedOn,ModifiedOn,ItemsOrderId,SupplierId,EmployeeId")] ItemsOrder itemsOrder)
-        {
-            if (ModelState.IsValid)
-            {
-                db.ItemsOrders.Add(itemsOrder);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            ViewBag.EmployeeId = new SelectList(db.Employees, "EmployeeId", "Name", itemsOrder.EmployeeId);
-            ViewBag.SupplierId = new SelectList(db.Suppliers, "SupplierId", "Name", itemsOrder.SupplierId);
-            return View(itemsOrder);
-        }
-
         // GET: ItemsOrders/Edit/5
         public ActionResult Edit(int? id)
         {

@@ -47,6 +47,7 @@
         <AssociationConnector Association="PetShopModel.FK__ItemInSto__Stock__03F0984C" ManuallyRouted="false" />
         <AssociationConnector Association="PetShopModel.R_54" ManuallyRouted="false" />
         <AssociationConnector Association="PetShopModel.R_41" ManuallyRouted="false" />
+        <AssociationConnector Association="PetShopModel.FK__ItemsOrde__Store__2739D489" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

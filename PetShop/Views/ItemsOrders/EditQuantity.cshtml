@@ -1,0 +1,37 @@
+﻿@model PetShop.Models.StockedItem
+
+<div class="modal-content">
+    @using (Html.BeginForm("EditQuantity", "ItemsOrders", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <h4>Stored Quanity</h4>
+            <hr />
+            <input id="stockedItemId" name="stockedItemId" type="hidden" value=@Model.StockedItemId>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                <label for="quantity">Enter stored quantity:</label>
+                <input type="number" value=@Model.Quantity id="quantity" name="quantity" min="0" max=@Model.Quantity>
+            </div>
+
+            <div class="form-group">
+                <div>
+                    @Html.ActionLink("Cancel", "Details")
+                </div>
+
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="OK" class="btn btn-default" id="submitButton" />
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+

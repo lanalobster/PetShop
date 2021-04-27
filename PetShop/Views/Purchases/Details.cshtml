@@ -44,7 +44,7 @@
             </td>
             <td>
                 @{
-                    double subtotal = itemInPurchase.Quantity * itemInPurchase.ItemInStore.Item.Price;
+                    double subtotal = itemInPurchase.Quantity * (double)(itemInPurchase.ItemInStore.Item.Price ?? 0);
                     if (percentage != 0)
                     {
                         subtotal = subtotal - (subtotal * percentage / 100.0);

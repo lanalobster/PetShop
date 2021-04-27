@@ -23,7 +23,7 @@ namespace PetShop.Models
         public int PurchaseId { get; set; }
         public System.DateTime CreatedOn { get; set; }
         public Nullable<System.DateTime> ModifiedOn { get; set; }
-        public int TotalSum { get; set; }
+        public Nullable<decimal> TotalSum { get; set; }
         public int EmployeeId { get; set; }
         public string CheckNumber { get; set; }
         public Nullable<int> CustomerId { get; set; }

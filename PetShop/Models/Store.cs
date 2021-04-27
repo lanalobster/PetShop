@@ -18,6 +18,7 @@ namespace PetShop.Models
         public Store()
         {
             this.ItemInStore = new HashSet<ItemInStore>();
+            this.ItemsOrder = new HashSet<ItemsOrder>();
         }
     
         public int StoreId { get; set; }
@@ -29,5 +30,7 @@ namespace PetShop.Models
         public virtual City City { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ItemInStore> ItemInStore { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ItemsOrder> ItemsOrder { get; set; }
     }
 }

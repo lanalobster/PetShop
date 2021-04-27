@@ -1,58 +1,125 @@
 ﻿@model PetShop.Models.ItemsOrder
 
+<h2>Order</h2>
+
+<p>CreatedOn: @Model.CreatedOn</p>
 @{
-    ViewBag.Title = "Details";
+    var status = ViewBag.Status;
+    var stockedItem = @Model.ItemInOrder.Select(io => io.StockedItem).FirstOrDefault()?.FirstOrDefault();
+    var storeName = @Model.Store?.Street;
+}
+<p>Store: @storeName</p>
+<p>Supplier: @String.Format("{0} {1}", Model.Supplier.Name, Model.Supplier.Surname)</p>
+<p>Status: @status</p>
+<p>Ordered by: @String.Format("{0} {1}", Model.Employee.Name, Model.Employee.Surname)</p>
+@if (status == "Completed")
+{
+    <p>Stored on: @stockedItem.CreatedOn</p>
+    <p>Stored by: @String.Format("{0} {1}", stockedItem?.Employee.Name, stockedItem?.Employee.Surname)</p>
 }
 
-<h2>Details</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            Item
+        </th>
+        <th>
+            Ordered Quantity
+        </th>
+        <th>
+            Stocked Quantity
+        </th>
+        <th>
+            Price (Per Item)
+        </th>
+        <th>
+            Subtotal
+        </th>
+    </tr>
+    @foreach (var itemInOrder in Model.ItemInOrder)
+    {
+        <tr>
+            <td>
+                @itemInOrder.Item.Name
+            </td>
+            <td>
+                @itemInOrder.Quantity
+            </td>
+            <td>
+                @{
+                    var stockedQuantity = itemInOrder.StockedItem.FirstOrDefault()?.Quantity;
+                    var stockedString = stockedQuantity?.ToString() ?? "-";
+                    if (status == "Finishing up")
+                    {
+                        stockedString = itemInOrder.StockedItem.FirstOrDefault()?.Quantity.ToString();
+                    }
+
+                }
+                @stockedString
+                @if (status == "Finishing up")
+                {
+                    @Ajax.ActionLink("Edit", "EditQuantity", new { itemInOrderId = itemInOrder.ItemInOrderId }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "editButton" })
+                }
+            </td>
+            <td>
+                @itemInOrder.Price
+            </td>
+            <td>
+                @{
+                    double subtotal = itemInOrder.Quantity * (double)(itemInOrder.Price ?? 0);
+                }
+                @string.Format("{0:0.00}", subtotal)
+            </td>
+        </tr>
+    }
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>Total:</td>
+        <td>
+            @String.Format("{0: 0.00}", Model.GetTotalSum())
+        </td>
+    </tr>
+
+</table>
+
+<div id="myModal" class="modal">
+    
+</div>
+
+@if (status == "Not completed")
+{
+    @Ajax.ActionLink("Complete order", "Complete", new {itemsOrderId = Model.ItemsOrderId}, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "body-content" });
+}
+
+@if (status == "Finishing up")
+{
+    @Html.ActionLink("OK", "Details", new { id = Model.ItemsOrderId});
+}
 
 <div>
-    <h4>ItemsOrder</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.TotalSum)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.TotalSum)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CreatedOn)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CreatedOn)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.ModifiedOn)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.ModifiedOn)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Employee.Name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Employee.Name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Supplier.Name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Supplier.Name)
-        </dd>
-
-    </dl>
+    @Html.ActionLink("Close", "Index");
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.ItemsOrderId }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script>
+    var modal = document.getElementById("myModal");
+    var btn = document.getElementById("editButton");
+    var span = document.getElementsByClassName("close")[0];
+
+    btn.onclick = function () {
+        modal.style.display = "block";
+    }
+
+    function showConfirmationWindow() {
+        var result = confirm("Your changes won't be saved. Are you sure you want to exit?");
+        if (result == true) {
+            window.location.href = "Index";
+        }
+    }
+</script>

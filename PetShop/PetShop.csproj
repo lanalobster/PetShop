@@ -379,6 +379,8 @@
     <Content Include="Views\ItemsOrders\AddItem.cshtml" />
     <Content Include="Views\ItemsOrders\AddSupplier.cshtml" />
     <Content Include="Views\ItemsOrders\RegisterSupplier.cshtml" />
+    <Content Include="Views\ItemsOrders\AddStore.cshtml" />
+    <Content Include="Views\ItemsOrders\EditQuantity.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

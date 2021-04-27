@@ -20,16 +20,29 @@ namespace PetShop.Models
             this.ItemInOrder = new HashSet<ItemInOrder>();
         }
     
-        public int TotalSum { get; set; }
+        public Nullable<decimal> TotalSum { get; set; }
         public System.DateTime CreatedOn { get; set; }
         public Nullable<System.DateTime> ModifiedOn { get; set; }
         public int ItemsOrderId { get; set; }
         public int SupplierId { get; set; }
         public int EmployeeId { get; set; }
+        public Nullable<int> StoreId { get; set; }
     
         public virtual Employee Employee { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ItemInOrder> ItemInOrder { get; set; }
         public virtual Supplier Supplier { get; set; }
+        public virtual Store Store { get; set; }
+
+        public double GetTotalSum()
+        {
+            double total = 0;
+            foreach (var itemInOrder in this.ItemInOrder)
+            {
+                double subtotal = (double)(itemInOrder.Quantity * itemInOrder.Price ?? 0);
+                total += subtotal;
+            }
+            return total;
+        }
     }
 }

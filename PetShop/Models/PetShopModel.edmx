@@ -98,7 +98,7 @@
           <Property Name="ModifiedOn" Type="datetime" />
           <Property Name="ItemId" Type="int" Nullable="false" />
           <Property Name="ItemsOrderId" Type="int" Nullable="false" />
-          <Property Name="Price" Type="int" Nullable="false" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="0" />
         </EntityType>
         <EntityType Name="ItemInPurchase">
           <Key>
@@ -127,12 +127,13 @@
           <Key>
             <PropertyRef Name="ItemsOrderId" />
           </Key>
-          <Property Name="TotalSum" Type="int" Nullable="false" />
+          <Property Name="TotalSum" Type="decimal" Precision="18" Scale="0" />
           <Property Name="CreatedOn" Type="datetime" Nullable="false" />
           <Property Name="ModifiedOn" Type="datetime" />
           <Property Name="ItemsOrderId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="SupplierId" Type="int" Nullable="false" />
           <Property Name="EmployeeId" Type="int" Nullable="false" />
+          <Property Name="StoreId" Type="int" />
         </EntityType>
         <EntityType Name="ItemSubcategory">
           <Key>
@@ -151,7 +152,7 @@
           <Property Name="PurchaseId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CreatedOn" Type="datetime" Nullable="false" />
           <Property Name="ModifiedOn" Type="datetime" />
-          <Property Name="TotalSum" Type="int" Nullable="false" />
+          <Property Name="TotalSum" Type="decimal" Precision="18" Scale="0" />
           <Property Name="EmployeeId" Type="int" Nullable="false" />
           <Property Name="CheckNumber" Type="char" MaxLength="20" Nullable="false" />
           <Property Name="CustomerId" Type="int" />
@@ -231,6 +232,18 @@
             </Principal>
             <Dependent Role="ItemInStore">
               <PropertyRef Name="StockedItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ItemsOrde__Store__2739D489">
+          <End Role="Store" Type="Self.Store" Multiplicity="0..1" />
+          <End Role="ItemsOrder" Type="Self.ItemsOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Store">
+              <PropertyRef Name="StoreId" />
+            </Principal>
+            <Dependent Role="ItemsOrder">
+              <PropertyRef Name="StoreId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -522,6 +535,10 @@
             <End Role="StockedItem" EntitySet="StockedItem" />
             <End Role="ItemInStore" EntitySet="ItemInStore" />
           </AssociationSet>
+          <AssociationSet Name="FK__ItemsOrde__Store__2739D489" Association="Self.FK__ItemsOrde__Store__2739D489">
+            <End Role="Store" EntitySet="Store" />
+            <End Role="ItemsOrder" EntitySet="ItemsOrder" />
+          </AssociationSet>
           <AssociationSet Name="R_16" Association="Self.R_16">
             <End Role="Brand" EntitySet="Brand" />
             <End Role="Item" EntitySet="Item" />
@@ -695,7 +712,7 @@
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
           <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
           <Property Name="BrandId" Type="Int32" />
-          <Property Name="Price" Type="Decimal" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="0" />
           <Property Name="AnimalId" Type="Int32" />
           <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="ItemSubcategoryId" Type="Int32" />
@@ -727,7 +744,7 @@
           <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
           <Property Name="ItemId" Type="Int32" Nullable="false" />
           <Property Name="ItemsOrderId" Type="Int32" Nullable="false" />
-          <Property Name="Price" Type="Int32" Nullable="false" />
+          <Property Name="Price" Type="Decimal" />
           <NavigationProperty Name="Item" Relationship="Self.R_72" FromRole="ItemInOrder" ToRole="Item" />
           <NavigationProperty Name="StockedItem" Relationship="Self.R_56" FromRole="ItemInOrder" ToRole="StockedItem" />
           <NavigationProperty Name="ItemsOrder" Relationship="Self.R_73" FromRole="ItemInOrder" ToRole="ItemsOrder" />
@@ -765,7 +782,7 @@
           <Key>
             <PropertyRef Name="ItemsOrderId" />
           </Key>
-          <Property Name="TotalSum" Type="Int32" Nullable="false" />
+          <Property Name="TotalSum" Type="Decimal" />
           <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
           <Property Name="ItemsOrderId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
@@ -774,6 +791,8 @@
           <NavigationProperty Name="Employee" Relationship="Self.R_74" FromRole="ItemsOrder" ToRole="Employee" />
           <NavigationProperty Name="ItemInOrder" Relationship="Self.R_73" FromRole="ItemsOrder" ToRole="ItemInOrder" />
           <NavigationProperty Name="Supplier" Relationship="Self.R_41" FromRole="ItemsOrder" ToRole="Supplier" />
+          <Property Name="StoreId" Type="Int32" />
+          <NavigationProperty Name="Store" Relationship="PetShopModel.FK__ItemsOrde__Store__2739D489" FromRole="ItemsOrder" ToRole="Store" />
         </EntityType>
         <EntityType Name="ItemSubcategory">
           <Key>
@@ -794,7 +813,7 @@
           <Property Name="PurchaseId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
-          <Property Name="TotalSum" Type="Int32" Nullable="false" />
+          <Property Name="TotalSum" Type="Decimal" Precision="18" Scale="0" />
           <Property Name="EmployeeId" Type="Int32" Nullable="false" />
           <Property Name="CheckNumber" Type="String" MaxLength="20" FixedLength="true" Unicode="false" Nullable="false" />
           <Property Name="CustomerId" Type="Int32" />
@@ -850,6 +869,7 @@
           <Property Name="CityId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="City" Relationship="Self.R_66" FromRole="Store" ToRole="City" />
           <NavigationProperty Name="ItemInStore" Relationship="Self.R_54" FromRole="Store" ToRole="ItemInStore" />
+          <NavigationProperty Name="ItemsOrder" Relationship="PetShopModel.FK__ItemsOrde__Store__2739D489" FromRole="Store" ToRole="ItemsOrder" />
         </EntityType>
         <EntityType Name="Supplier">
           <Key>
@@ -1266,7 +1286,23 @@
             <End Role="Supplier" EntitySet="Supplier" />
             <End Role="ItemsOrder" EntitySet="ItemsOrder" />
           </AssociationSet>
+          <AssociationSet Name="FK__ItemsOrde__Store__2739D489" Association="PetShopModel.FK__ItemsOrde__Store__2739D489">
+            <End Role="Store" EntitySet="Store" />
+            <End Role="ItemsOrder" EntitySet="ItemsOrder" />
+          </AssociationSet>
         </EntityContainer>
+        <Association Name="FK__ItemsOrde__Store__2739D489">
+          <End Type="PetShopModel.Store" Role="Store" Multiplicity="0..1" />
+          <End Type="PetShopModel.ItemsOrder" Role="ItemsOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Store">
+              <PropertyRef Name="StoreId" />
+            </Principal>
+            <Dependent Role="ItemsOrder">
+              <PropertyRef Name="StoreId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1404,6 +1440,7 @@
           <EntitySetMapping Name="ItemsOrder">
             <EntityTypeMapping TypeName="PetShopModel.ItemsOrder">
               <MappingFragment StoreEntitySet="ItemsOrder">
+                <ScalarProperty Name="StoreId" ColumnName="StoreId" />
                 <ScalarProperty Name="TotalSum" ColumnName="TotalSum" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />

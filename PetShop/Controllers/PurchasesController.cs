@@ -168,7 +168,9 @@ namespace PetShop.Controllers
                 currentPurchase.ChosenCustomer =  db.Customers.Add(currentPurchase.ChosenCustomer);
             }
             purchaseToAdd.Customer = currentPurchase.ChosenCustomer;
-            purchaseToAdd.TotalSum = Convert.ToInt32(currentPurchase.GetTotalSum());
+            purchaseToAdd.TotalSum = (decimal?)currentPurchase.GetTotalSum();
+            if(currentPurchase.ChosenCustomer != null)
+                purchase.Customer.Bonuses += Convert.ToInt32(purchase.TotalSum);
             var addedPurchase = db.Purchases.Add(purchaseToAdd);
             foreach (var itemInPurchase in currentPurchase.ItemsInPurchase)
             {

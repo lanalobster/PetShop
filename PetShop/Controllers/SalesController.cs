@@ -48,10 +48,11 @@ namespace PetShop.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "SaleId,StartDate,EndDate,Percentage,CreatedOn,ModifiedOn,ItemId")] Sale sale)
+        public ActionResult Create([Bind(Include = "StartDate,EndDate,Percentage,ItemId")] Sale sale)
         {
             if (ModelState.IsValid)
             {
+                sale.CreatedOn = DateTime.UtcNow;
                 db.Sales.Add(sale);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -82,10 +83,11 @@ namespace PetShop.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "SaleId,StartDate,EndDate,Percentage,CreatedOn,ModifiedOn,ItemId")] Sale sale)
+        public ActionResult Edit([Bind(Include = "SaleId,CreatedOn,StartDate,EndDate,Percentage,ItemId")] Sale sale)
         {
             if (ModelState.IsValid)
             {
+                sale.ModifiedOn = DateTime.UtcNow;
                 db.Entry(sale).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

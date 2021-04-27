@@ -6,28 +6,21 @@
         @Html.AntiForgeryToken()
 
         <div class="form-horizontal">
-            <h4>Supplier</h4>
+            <h4>Store</h4>
             <hr />
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <p>@String.Join(" ", Model.SupplierErrorMessages)</p>
             <div class="form-group">
-                <label for="phoneNumber">Supplier</label>
-                <input list="customers" name="phoneNumber" id="customer" />
-                <datalist id="customers" style="max-height: 150px">
-                    @foreach (var supplier in Model.Suppliers)
+                <select name="storeId">
+                    @foreach (var store in Model.Stores)
                     {
-                        <option value=@supplier.PhoneNumber>@String.Format("{0} {1}", supplier.Name, supplier.Surname)</option>
+                        <option value=@store.StoreId>@store.Street</option>
                     }
-                </datalist>
+                </select>
             </div>
 
             <div class="form-group">
                 <div>
                     @Html.ActionLink("Cancel", "Create")
-                </div>
-
-                <div>
-                    @Html.ActionLink("Register", "RegisterSupplier", "ItemsOrders")
                 </div>
 
                 <div class="col-md-offset-2 col-md-10">
@@ -39,8 +32,8 @@
 </div>
 
 
-
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
+
 
