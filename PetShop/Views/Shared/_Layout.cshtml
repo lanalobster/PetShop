@@ -12,6 +12,51 @@
     @Scripts.Render("~/scripts/jquery.validate.min.js")
     @Scripts.Render("~/scripts/jquery-3.4.1.js")
     @Scripts.Render("~/scripts/jquery.unobtrusive-ajax.js")
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .dropbtn {
+            background-color: #3498DB;
+            color: white;
+            padding: 16px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+            .dropbtn:hover, .dropbtn:focus {
+                background-color: #2980B9;
+            }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            overflow: auto;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block !important;
+        }
+
+        .dropdown a:hover {
+            background-color: #ddd;
+        }
+
+        .show {
+            display: block !important;
+        }
+    </style>
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -27,7 +72,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     @{
-                        if (this.User.Identity.IsAuthenticated)
+                        if (this.User.Identity.IsAuthenticated && this.User.IsInRole("cashier"))
                         {
                             <li>@Html.ActionLink("Items", "Index", "Items")</li>
                             <li>@Html.ActionLink("Purchases", "Index", "Purchases")</li>
@@ -36,22 +81,38 @@
                     @{
                         if (this.User.Identity.IsAuthenticated && (this.User.IsInRole("manager") || this.User.IsInRole("admin")))
                         {
+                            <li class="dropdown">
+                                <button onclick="myFunction()" class="dropbtn">Items</button>
+                                <div id="myDropdown" class="dropdown-content">
+                                    @Html.ActionLink("Items", "Index", "Items")
+                                    @Html.ActionLink("Brands", "Index", "Brands")
+                                    @Html.ActionLink("Categories", "Index", "ItemCategories")
+                                    @Html.ActionLink("Subcategories", "Index", "ItemSubcategories")
+                                    @Html.ActionLink("Animals", "Index", "Animals")
+                                </div>
+                            </li>
+                            <li>@Html.ActionLink("Purchases", "Index", "Purchases")</li>
                             <li>@Html.ActionLink("Orders", "Index", "ItemsOrders")</li>
                             <li>@Html.ActionLink("Sales", "Index", "Sales")</li>
-                            <li>@Html.ActionLink("Employees", "Index", "Employees")</li>
+                            <li class="dropdown">
+                                <button onclick="myFunction1()" class="dropbtn">Stores</button>
+                                <div id="myDropdown1" class="dropdown-content">
+                                    @Html.ActionLink("Stores", "Index", "Stores")
+                                    @Html.ActionLink("Cities", "Index", "Cities")
+                                    @Html.ActionLink("Regions", "Index", "Regions")
+                                </div>
+                            </li>
+                            <li class="dropdown">
+                                <button onclick="myFunction2()" class="dropbtn">People</button>
+                                <div id="myDropdown2" class="dropdown-content">
+                                    @Html.ActionLink("Customers", "Index", "Customers")
+                                    @Html.ActionLink("Suppliers", "Index", "Suppliers")
+                                    @Html.ActionLink("Employees", "Index", "Employees")
+                                    @Html.ActionLink("Titles", "Index", "Titles")
+                                </div>
+                            </li>
                         }
                     }
-                    <li class="dropdown">
-                        <button class="dropbtn">
-                            Dropdown
-                            <i class="fa fa-caret-down"></i>
-                        </button>
-                        <div class="dropdown-content">
-                            <a href="#">Link 1</a>
-                            <a href="#">Link 2</a>
-                            <a href="#">Link 3</a>
-                        </div>
-                    </li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
@@ -68,3 +129,40 @@
     @RenderSection("scripts", required: false)
 </body>
 </html>
+
+
+<script>
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    function myFunction() {
+        document.getElementById("myDropdown").classList.toggle("show");
+        document.getElementById("myDropdown1").classList.remove("show");
+        document.getElementById("myDropdown2").classList.remove("show");
+    }
+
+    function myFunction1() {
+        document.getElementById("myDropdown1").classList.toggle("show");
+        document.getElementById("myDropdown").classList.remove("show");
+        document.getElementById("myDropdown2").classList.remove("show");
+    }
+
+    function myFunction2() {
+        document.getElementById("myDropdown2").classList.toggle("show");
+        document.getElementById("myDropdown1").classList.remove("show");
+        document.getElementById("myDropdown").classList.remove("show");
+    }
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function (event) {
+        if (!event.target.matches('.dropbtn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+</script>
+

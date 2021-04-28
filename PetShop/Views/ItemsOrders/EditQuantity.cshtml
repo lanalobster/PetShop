@@ -8,7 +8,7 @@
         <div class="form-horizontal">
             <h4>Stored Quanity</h4>
             <hr />
-            <input id="stockedItemId" name="stockedItemId" type="hidden" value=@Model.StockedItemId>
+            <input id="stockedItemId" name="itemInOrderId" type="hidden" value=@Model.ItemInOrder.ItemInOrderId>
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <div class="form-group">
                 <label for="quantity">Enter stored quantity:</label>

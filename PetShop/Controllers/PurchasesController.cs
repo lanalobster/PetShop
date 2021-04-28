@@ -127,6 +127,23 @@ namespace PetShop.Controllers
             return View();
         }
 
+        [HttpGet]
+        public ActionResult AddStore()
+        {
+            return PartialView(currentPurchase);
+        }
+
+        [HttpPost]
+        public ActionResult AddStore(int storeId)
+        {
+            var store = db.Stores.Where(st => st.StoreId == storeId).FirstOrDefault();
+            currentPurchase.ChosenStore = store;
+            var itemsInStore = db.ItemInStores.Where(i => i.Quantity != 0 && i.StoreId == store.StoreId).Include(ist => ist.Item).Include(ist => ist.Item.Sale).ToList();
+            currentPurchase.ItemsInStore = itemsInStore;
+            return View("Create", currentPurchase);
+        }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult RegisterCustomer([Bind(Include = "Name,Surname,DateOfBirth,EmailAddress,PhoneNumber, Street,CityId")] Customer customer)
@@ -149,7 +166,8 @@ namespace PetShop.Controllers
         {
             var itemsInStore = db.ItemInStores.Where(i => i.Quantity != 0).Include(ist => ist.Item).Include(ist => ist.Item.Sale).ToList();
             var customers = db.Customers.ToList();
-            currentPurchase = currentPurchase ?? new PurchaseViewModel(itemsInStore, customers);
+            var stores = db.Stores.ToList();
+            currentPurchase = currentPurchase ?? new PurchaseViewModel(itemsInStore, customers) { Stores = stores };
             currentPurchase.CustomerErrorMessages.Clear();
             currentPurchase.ItemErrorMessages.Clear();
             return View(currentPurchase);

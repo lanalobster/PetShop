@@ -182,34 +182,62 @@ namespace PetShop.Controllers
             db.SaveChanges();
             currentOrder = null;
             ViewBag.Status = "Not completed";
-            return View("Details", addedOrder);
+            return RedirectToAction("Details", new {id = addedOrder.ItemsOrderId });
         }
 
         [HttpPost]
-        public ActionResult Complete(int itemsOrderId)
+        public ActionResult Stock()
         {
             var employee = db.Employees.Where(e => e.EmailAddress == User.Identity.Name).FirstOrDefault();
-            var order = db.ItemsOrders.Where(io => io.ItemsOrderId == itemsOrderId).FirstOrDefault();
+            var order = currentOrder.ItemsOrder;
             foreach (var itemInOrder in order.ItemInOrder)
             {
                 var stockedItem = new StockedItem()
                 {
-                    CreatedOn = DateTime.UtcNow,
                     ItemInOrder = itemInOrder,
                     Employee = employee,
                     Quantity = itemInOrder.Quantity,
                 };
-                db.StockedItems.Add(stockedItem);
-                db.SaveChanges();
+                currentOrder.StockedItems.Add(stockedItem);
             }
             ViewBag.Status = "Finishing up";
-            return View("Details", order);
+            return View("Details", currentOrder);
+        }
+
+        public ActionResult Complete()
+        {
+            var employee = db.Employees.Where(e => e.EmailAddress == User.Identity.Name).FirstOrDefault();
+            var order = currentOrder.ItemsOrder;
+            foreach (var stockedItem in currentOrder.StockedItems)
+            {
+                var stockedItemToAdd = new StockedItem()
+                {
+                    CreatedOn = DateTime.UtcNow,
+                    ItemInOrder = stockedItem.ItemInOrder,
+                    Employee = employee,
+                    Quantity = stockedItem.ItemInOrder.Quantity,
+                };
+                var addedStockedItem = db.StockedItems.Add(stockedItemToAdd);
+                db.SaveChanges();
+                var itemInStore = new ItemInStore()
+                {
+                    CreatedOn = DateTime.UtcNow,
+                    Item = stockedItem.ItemInOrder.Item,
+                    Quantity = addedStockedItem.Quantity,
+                    StockedItem = addedStockedItem,
+                    Store = order.Store,
+                };
+                db.ItemInStores.Add(itemInStore);
+                db.SaveChanges();
+            }
+            ViewBag.Status = "Complete";
+            return RedirectToAction("Details", new { id = currentOrder.ItemsOrder.ItemsOrderId } );
         }
 
         [HttpGet]
          public ActionResult EditQuantity(int itemInOrderId)
         {
-            var stockedItem = db.StockedItems.Where(si => si.ItemInOrderId == itemInOrderId).FirstOrDefault();
+            var stockedItem = currentOrder.StockedItems.Where(si => si.ItemInOrder.ItemInOrderId == itemInOrderId).FirstOrDefault();
             if (stockedItem == null)
             {
                 return HttpNotFound();
@@ -218,18 +246,17 @@ namespace PetShop.Controllers
          }
 
         [HttpPost]
-        public ActionResult EditQuantity(int stockedItemid, int quantity)
+        public ActionResult EditQuantity(int itemInOrderId, int quantity)
         {
-            var stockedItem = db.StockedItems.Where(si => si.StockedItemId == stockedItemid).FirstOrDefault();
+            var stockedItem = currentOrder.StockedItems.Where(si => si.ItemInOrder.ItemInOrderId == itemInOrderId).FirstOrDefault();
             if (stockedItem == null)
             {
                 return HttpNotFound();
             }
             stockedItem.Quantity = quantity;
-            db.SaveChanges();
             ViewBag.Status = "Finishing up";
-            var order = db.ItemsOrders.Where(io => io.ItemsOrderId == stockedItem.ItemInOrder.ItemsOrderId).FirstOrDefault();
-            return View("Details", order);
+            //var order = db.ItemsOrders.Where(io => io.ItemsOrderId == stockedItem.ItemInOrder.ItemsOrderId).FirstOrDefault();
+            return View("Details", currentOrder);
         }
 
         public ActionResult Details(int? id)
@@ -239,13 +266,23 @@ namespace PetShop.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             ItemsOrder itemsOrder = db.ItemsOrders.Find(id);
+            var stockedItems = db.StockedItems.Where(si => si.ItemInOrder.ItemsOrderId == itemsOrder.ItemsOrderId);
+            currentOrder = new OrderViewModel()
+            {
+                ChosenSupplier = itemsOrder.Supplier,
+                ChosenStore = itemsOrder.Store,
+                ItemsInOrder = itemsOrder.ItemInOrder.ToList(),
+                ItemsOrder = itemsOrder,
+                StockedItems = stockedItems.ToList()
+            };
+
             if (itemsOrder == null)
             {
                 return HttpNotFound();
             }
             var completed = itemsOrder.ItemInOrder.All(io => io.StockedItem?.Count() > 0);
             ViewBag.Status = completed ? "Completed" : "Not completed";
-            return View(itemsOrder);
+            return View(currentOrder);
         }
         // GET: ItemsOrders/Edit/5
         public ActionResult Edit(int? id)

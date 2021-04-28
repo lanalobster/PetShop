@@ -36,10 +36,10 @@
     {
 <tr>
     <td>
-        @item.ItemsOrder.CreatedOn.Date
+        @item.ItemsOrder.CreatedOn.Date.ToString("MM/dd/yyyy H:mm")
     </td>
     <td>
-        @{var stockedDate = item.StockedItems.Count() > 0 ? item.StockedItems[0].CreatedOn.Date.ToString() : "";}
+        @{var stockedDate = item.StockedItems.Count() > 0 ? item.StockedItems[0].CreatedOn.Date.ToString("MM/dd/yyyy H:mm") : "";}
         @stockedDate
     </td>
 

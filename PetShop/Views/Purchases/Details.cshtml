@@ -4,6 +4,9 @@
 
 <p>Created on: @Model.CreatedOn</p>
 <p>Cashier: @String.Format("{0} {1}", Model.Employee.Name, Model.Employee.Surname)</p>
+<p>
+    Store: @String.Format("{0}", model.ItemInPurchase.FirstOrDefault()?.ItemInStore?.Store?.Street)
+</p>
 
 <table class="table">
     <tr>

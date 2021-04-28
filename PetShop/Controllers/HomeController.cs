@@ -17,7 +17,7 @@ namespace PetShop.Controllers
                                            .GetUserManager<ApplicationUserManager>();
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             if(user == null)
-                return View();
+                return View(@"~/Views/Account/Login.cshtml");
             var isUserCashier = await userManager.IsInRoleAsync(user.Id, "cashier");
             if (isUserCashier)
                 return RedirectToAction("Index", "Items");

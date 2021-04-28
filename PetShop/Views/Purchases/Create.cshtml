@@ -3,6 +3,16 @@
 <script type="text/javascript" charset="utf-8" src="https://www.zoonman.com/projects/combobox/combobox.js"></script>
 
 <h2>New Purchase</h2>
+@if (Model.ChosenStore != null)
+{
+    <p>Store: @Model.ChosenStore.Street</p>
+    if (Model.ItemsInPurchase.Count() == 0)
+    {
+        @Ajax.ActionLink("Change", "AddStore", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "storeButton" })
+    }
+
+}
+
 
 <table class="table">
     <tr>
@@ -98,51 +108,66 @@
 
 </table>
 
-    @if (Model.ChosenCustomer == null)
+@if (Model.ChosenStore == null)
+{
+    @Ajax.ActionLink("Choose Store", "AddStore", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "storeButton" })
+}
+else
+{
+    @Ajax.ActionLink("Add Item", "AddItem", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "myBtn", onclick= "showModal()" })
+}
+@if (Model.ChosenCustomer == null)
+{
+    @Ajax.ActionLink("Add Customer", "AddCustomer", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton" })
+}
+
+
+
+
+<div id="myModal" class="modal">
+    @if (Model.ItemErrorMessages?.Count > 0)
     {
-        @Ajax.ActionLink("Add Customer", "AddCustomer", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton" })
+        @RenderPage("AddItem.cshtml", Model)
     }
-
-    @Ajax.ActionLink("Add Item", "AddItem", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "myBtn" })
-
-
-    <div id="myModal" class="modal">
-        @if (Model.ItemErrorMessages?.Count > 0)
-        {
-            @RenderPage("AddItem.cshtml", Model)
-        }
-        @if (Model.CustomerErrorMessages?.Count > 0)
-        {
-            @RenderPage("AddCustomer.cshtml", Model)
-        }
-    </div>
-
-    @if (Model.ItemsInPurchase.Count() > 0)
+    @if (Model.CustomerErrorMessages?.Count > 0)
     {
-        <div>
-            @Ajax.ActionLink("Finish", "Create", new AjaxOptions{ HttpMethod= "POST", UpdateTargetId= "body-content" });
-        </div>
+        @RenderPage("AddCustomer.cshtml", Model)
     }
+</div>
 
+@if (Model.ItemsInPurchase.Count() > 0)
+{
     <div>
-        <button onclick="showConfirmationWindow()">Cancel</button>
+        @Ajax.ActionLink("Finish", "Create", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "body-content" });
     </div>
+}
 
-    @section Scripts {
-        @Scripts.Render("~/bundles/jqueryval")
-    }
+<div>
+    <button onclick="showConfirmationWindow()">Cancel</button>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
 
 <script>
     var modal = document.getElementById("myModal");
     var btn = document.getElementById("myBtn");
     var registerButton = document.getElementById("customerButton");
+    var storeButton = document.getElementById("storeButton");
+
     var span = document.getElementsByClassName("close")[0];
 
     registerButton.onclick = function () {
         modal.style.display = "block";
     }
 
-    btn.onclick = function () {
+    //btn.onclick = 
+    function showModal() {
+        modal.style.display = "block";
+    }
+
+    storeButton.onclick = function () {
         modal.style.display = "block";
     }
 

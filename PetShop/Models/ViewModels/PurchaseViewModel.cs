@@ -14,6 +14,8 @@ namespace PetShop.Models.ViewModels
         public List<string> ItemErrorMessages { get; set; } = new List<string>();
         public List<string> CustomerErrorMessages { get; set; } = new List<string>();
         public Customer ChosenCustomer { get; set; }
+        public List<Store> Stores { get; set; } = new List<Store>();
+        public Store ChosenStore { get; set; }
 
         public PurchaseViewModel(List<ItemInStore> itemsInStore, List<Customer> customers)
         {

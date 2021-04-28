@@ -180,7 +180,9 @@
     <Compile Include="Controllers\ItemsOrdersController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\PurchasesController.cs" />
+    <Compile Include="Controllers\RegionsController.cs" />
     <Compile Include="Controllers\SalesController.cs" />
+    <Compile Include="Controllers\StoresController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -381,6 +383,11 @@
     <Content Include="Views\ItemsOrders\RegisterSupplier.cshtml" />
     <Content Include="Views\ItemsOrders\AddStore.cshtml" />
     <Content Include="Views\ItemsOrders\EditQuantity.cshtml" />
+    <Content Include="Views\Purchases\AddStore.cshtml" />
+    <Content Include="Views\Stores\Create.cshtml" />
+    <Content Include="Views\Stores\Index.cshtml" />
+    <Content Include="Views\Regions\Create.cshtml" />
+    <Content Include="Views\Regions\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

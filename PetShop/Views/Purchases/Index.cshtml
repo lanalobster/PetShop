@@ -35,34 +35,40 @@ else
             <th>
                 @Html.DisplayNameFor(model => model.Customer)
             </th>
+            <th>
+                Store
+            </th>
             <th></th>
         </tr>
 
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CheckNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TotalSum)
-                </td>
-                <td>
-                    @String.Format("{0} {1}", item.Employee.Name, item.Employee.Surname)
-                </td>
-                <td>
-                    @String.Format("{0} {1}", item.Customer?.Name, item.Customer?.Surname)
-                </td>
-                <td>
-                    @Html.ActionLink("Details", "Details", new { id = item.PurchaseId })
-                    @{
-                        if (this.User.Identity.IsAuthenticated && (this.User.IsInRole("admin")))
-                        {
-                            @Html.ActionLink("Delete", "Delete", new { id = item.PurchaseId })
-                        }
-                    }
-                </td>
-            </tr>
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.CheckNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TotalSum)
+        </td>
+        <td>
+            @String.Format("{0} {1}", item.Employee.Name, item.Employee.Surname)
+        </td>
+        <td>
+            @String.Format("{0} {1}", item.Customer?.Name, item.Customer?.Surname)
+        </td>
+        <td>
+            @String.Format("{0}", item.ItemInPurchase.FirstOrDefault()?.ItemInStore?.Store?.Street)
+        </td>
+        <td>
+            @Html.ActionLink("Details", "Details", new { id = item.PurchaseId })
+            @{
+                if (this.User.Identity.IsAuthenticated && (this.User.IsInRole("admin")))
+                {
+                    @Html.ActionLink("Delete", "Delete", new { id = item.PurchaseId })
+                }
+            }
+        </td>
+    </tr>
         }
 
     </table>

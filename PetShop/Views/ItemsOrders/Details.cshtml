@@ -1,17 +1,17 @@
-﻿@model PetShop.Models.ItemsOrder
+﻿@model PetShop.Models.ViewModels.OrderViewModel
 
 <h2>Order</h2>
 
-<p>CreatedOn: @Model.CreatedOn</p>
+<p>CreatedOn: @Model.ItemsOrder.CreatedOn</p>
 @{
     var status = ViewBag.Status;
-    var stockedItem = @Model.ItemInOrder.Select(io => io.StockedItem).FirstOrDefault()?.FirstOrDefault();
-    var storeName = @Model.Store?.Street;
+    var stockedItem = @Model.StockedItems.FirstOrDefault();
+    var storeName = @Model.ItemsOrder.Store?.Street;
 }
 <p>Store: @storeName</p>
-<p>Supplier: @String.Format("{0} {1}", Model.Supplier.Name, Model.Supplier.Surname)</p>
+<p>Supplier: @String.Format("{0} {1}", Model.ItemsOrder.Supplier.Name, Model.ItemsOrder.Supplier.Surname)</p>
 <p>Status: @status</p>
-<p>Ordered by: @String.Format("{0} {1}", Model.Employee.Name, Model.Employee.Surname)</p>
+<p>Ordered by: @String.Format("{0} {1}", Model.ItemsOrder.Employee.Name, Model.ItemsOrder.Employee.Surname)</p>
 @if (status == "Completed")
 {
     <p>Stored on: @stockedItem.CreatedOn</p>
@@ -37,7 +37,7 @@
             Subtotal
         </th>
     </tr>
-    @foreach (var itemInOrder in Model.ItemInOrder)
+    @foreach (var itemInOrder in Model.ItemsOrder.ItemInOrder)
     {
         <tr>
             <td>
@@ -48,13 +48,8 @@
             </td>
             <td>
                 @{
-                    var stockedQuantity = itemInOrder.StockedItem.FirstOrDefault()?.Quantity;
+                    var stockedQuantity = Model.StockedItems.Where(si => si.ItemInOrder == itemInOrder).FirstOrDefault()?.Quantity;
                     var stockedString = stockedQuantity?.ToString() ?? "-";
-                    if (status == "Finishing up")
-                    {
-                        stockedString = itemInOrder.StockedItem.FirstOrDefault()?.Quantity.ToString();
-                    }
-
                 }
                 @stockedString
                 @if (status == "Finishing up")
@@ -86,17 +81,17 @@
 </table>
 
 <div id="myModal" class="modal">
-    
+
 </div>
 
 @if (status == "Not completed")
 {
-    @Ajax.ActionLink("Complete order", "Complete", new {itemsOrderId = Model.ItemsOrderId}, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "body-content" });
+    @Ajax.ActionLink("Complete order", "Stock", new { }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "body-content" });
 }
 
 @if (status == "Finishing up")
 {
-    @Html.ActionLink("OK", "Details", new { id = Model.ItemsOrderId});
+    @Html.ActionLink("OK", "Complete", new { });
 }
 
 <div>
