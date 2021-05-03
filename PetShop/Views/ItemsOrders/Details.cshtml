@@ -1,101 +1,116 @@
 ﻿@model PetShop.Models.ViewModels.OrderViewModel
 
-<h2>Order</h2>
+<div class="check-container">
 
-<p>CreatedOn: @Model.ItemsOrder.CreatedOn</p>
-@{
-    var status = ViewBag.Status;
-    var stockedItem = @Model.StockedItems.FirstOrDefault();
-    var storeName = @Model.ItemsOrder.Store?.Street;
-}
-<p>Store: @storeName</p>
-<p>Supplier: @String.Format("{0} {1}", Model.ItemsOrder.Supplier.Name, Model.ItemsOrder.Supplier.Surname)</p>
-<p>Status: @status</p>
-<p>Ordered by: @String.Format("{0} {1}", Model.ItemsOrder.Employee.Name, Model.ItemsOrder.Employee.Surname)</p>
-@if (status == "Completed")
-{
-    <p>Stored on: @stockedItem.CreatedOn</p>
-    <p>Stored by: @String.Format("{0} {1}", stockedItem?.Employee.Name, stockedItem?.Employee.Surname)</p>
-}
+    <div class="center">
+        <h1>@String.Format("Order")</h1>
+    </div>
 
+    @{
+        var status = ViewBag.Status;
+        var stockedItem = @Model.StockedItems.FirstOrDefault();
+        var storeName = @Model.ItemsOrder.Store?.Street;
+    }
 
-<table class="table">
-    <tr>
-        <th>
-            Item
-        </th>
-        <th>
-            Ordered Quantity
-        </th>
-        <th>
-            Stocked Quantity
-        </th>
-        <th>
-            Price (Per Item)
-        </th>
-        <th>
-            Subtotal
-        </th>
-    </tr>
-    @foreach (var itemInOrder in Model.ItemsOrder.ItemInOrder)
-    {
+    <div class="info">
+        <p><span class="label">Created on: </span>@Model.ItemsOrder.CreatedOn</p>
+        <p><span class="label">Ordered by: </span>@String.Format("{0} {1}", Model.ItemsOrder.Employee.Name, Model.ItemsOrder.Employee.Surname)</p>
+        @if (status == "Completed")
+        {
+            <p><span class="label">Stored on: </span> @stockedItem.CreatedOn</p>
+            <p><span class="label">Stored by: </span> @String.Format("{0} {1}", stockedItem?.Employee.Name, stockedItem?.Employee.Surname)</p>
+        }
+        <p><span class="label">Store: </span>@storeName</p>
+        <p>
+            <span class="label">Supplier: </span>@String.Format("{0} {1}", Model.ItemsOrder.Supplier.Name, Model.ItemsOrder.Supplier.Surname)
+        </p>
+        <p><span class="label">Status: </span>@status</p>
+    </div>
+
+    <table class="table">
         <tr>
+            <th>
+                Item
+            </th>
+            <th>
+                Ordered Quantity
+            </th>
+            <th>
+                Stocked Quantity
+            </th>
+            <th>
+                Price (Per Item)
+            </th>
+            <th>
+                Subtotal
+            </th>
+        </tr>
+        @foreach (var itemInOrder in Model.ItemsOrder.ItemInOrder)
+        {
+            <tr>
+                <td>
+                    @itemInOrder.Item.Name
+                </td>
+                <td>
+                    @itemInOrder.Quantity
+                </td>
+                <td>
+                    @{
+                        var stockedQuantity = Model.StockedItems.Where(si => si.ItemInOrder == itemInOrder).FirstOrDefault()?.Quantity;
+                        var stockedString = stockedQuantity?.ToString() ?? "-";
+                    }
+                    @stockedString
+                    @if (status == "Finishing up")
+                    {
+                        @Ajax.ActionLink("Edit", "EditQuantity", new { itemInOrderId = itemInOrder.ItemInOrderId }, new AjaxOptions { UpdateTargetId = "myModal" }, new { onclick= "Show()", @class="control"})
+                    }
+                </td>
+                <td>
+                    @itemInOrder.Price
+                </td>
+                <td>
+                    @{
+                        double subtotal = itemInOrder.Quantity * (double)(itemInOrder.Price ?? 0);
+                    }
+                    @string.Format("{0:0.00}", subtotal)
+                </td>
+            </tr>
+        }
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Total:</td>
             <td>
-                @itemInOrder.Item.Name
-            </td>
-            <td>
-                @itemInOrder.Quantity
-            </td>
-            <td>
-                @{
-                    var stockedQuantity = Model.StockedItems.Where(si => si.ItemInOrder == itemInOrder).FirstOrDefault()?.Quantity;
-                    var stockedString = stockedQuantity?.ToString() ?? "-";
-                }
-                @stockedString
-                @if (status == "Finishing up")
-                {
-                    @Ajax.ActionLink("Edit", "EditQuantity", new { itemInOrderId = itemInOrder.ItemInOrderId }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "editButton" })
-                }
-            </td>
-            <td>
-                @itemInOrder.Price
-            </td>
-            <td>
-                @{
-                    double subtotal = itemInOrder.Quantity * (double)(itemInOrder.Price ?? 0);
-                }
-                @string.Format("{0:0.00}", subtotal)
+                @String.Format("{0: 0.00}", Model.GetTotalSum())
             </td>
         </tr>
-    }
-    <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>Total:</td>
-        <td>
-            @String.Format("{0: 0.00}", Model.GetTotalSum())
-        </td>
-    </tr>
 
-</table>
+    </table>
 
-<div id="myModal" class="modal">
+    <div id="myModal" class="modal">
 
-</div>
+    </div>
 
-@if (status == "Not completed")
-{
-    @Ajax.ActionLink("Complete order", "Stock", new { }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "body-content" });
-}
+    <div class="buttons">
+        <div class="control-container">
+            @if (status == "Not completed")
+            {
+                @Ajax.ActionLink("Complete order", "Stock", new { }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "body-content" }, new { @class = "submit" });
+            }
+            @if (status == "Finishing up")
+            {
+                @Html.ActionLink("OK", "Complete", new { }, new { @class = "submit" });
+            }
 
-@if (status == "Finishing up")
-{
-    @Html.ActionLink("OK", "Complete", new { });
-}
+        </div>
+        <div class="control-container">
+            @Html.ActionLink("Close", "Index",  new { }, new { @class = "submit" })
+        </div>
+    </div>
 
-<div>
-    @Html.ActionLink("Close", "Index");
+
+
 </div>
 
 @section Scripts {
@@ -107,7 +122,11 @@
     var btn = document.getElementById("editButton");
     var span = document.getElementsByClassName("close")[0];
 
-    btn.onclick = function () {
+    //btn.onclick = function () {
+    //    modal.style.display = "block";
+    //}
+
+   function Show() {
         modal.style.display = "block";
     }
 

@@ -18,10 +18,26 @@ namespace PetShop.Controllers
         // GET: Items
         public ActionResult Index(int page = 1)
         {
-            return RedirectToAction("Search");
+            //foreach(var item in db.Items.ToList())
+            //{
+            //    item.Name = "Animal Item " + Convert.ToInt32(item.Price + item.ItemId/10);
+            //    db.Entry(item).State = EntityState.Modified;
+            //    db.SaveChanges();
+            //}
+
+            var foundItems = db.Items.ToList();
+            var itemsPerPage = PageConfig.ItemsPerPage;
+            ViewBag.CurrentPage = page;
+            ViewBag.NumberOfPages = foundItems.Count / itemsPerPage + 1;
+            if (foundItems.Count <= 0)
+            {
+                return PartialView("NoMatchFound");
+            }
+            var itemsToShow = foundItems.OrderBy(i => i.Name).Skip((page - 1) * itemsPerPage).Take(itemsPerPage).ToList();
+            return View(itemsToShow);
         }
 
-        public ActionResult Search(string name="", int page = 1)
+        public ActionResult Search(string name = "", int page = 1)
         {
             var foundItems = db.Items.Where(i => i.Name.Contains(name)).ToList();
             var itemsPerPage = PageConfig.ItemsPerPage;
@@ -33,32 +49,16 @@ namespace PetShop.Controllers
                 return PartialView("NoMatchFound");
             }
             var itemsToShow = foundItems.OrderBy(i => i.Name).Skip((page - 1) * itemsPerPage).Take(itemsPerPage).ToList();
-            if(string.IsNullOrEmpty(name))
-                return View("Index", itemsToShow);
             return PartialView(itemsToShow);
-        }
-
-        // GET: Items/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Item item = db.Items.Find(id);
-            if (item == null)
-            {
-                return HttpNotFound();
-            }
-            return View(item);
         }
 
         // GET: Items/Create
         public ActionResult Create()
         {
-            ViewBag.AnimalId = new SelectList(db.Animals, "AnimalId", "Name");
-            ViewBag.BrandId = new SelectList(db.Brands, "BrandId", "Name");
-            ViewBag.ItemSubcategoryId = new SelectList(db.ItemSubcategories, "ItemSubcategoryId", "Name");
+            ViewBag.Animals = db.Animals.Select(a => a.Name).ToList();
+            ViewBag.Brands = db.Brands.Select(a => a.Name).ToList();
+            ViewBag.ItemSubcategories = db.ItemSubcategories.Select(a => a.Name).ToList();
+            ViewBag.Itemcategories = db.ItemCategories.Select(a => a.Name).ToList();
             return View();
         }
 
@@ -67,18 +67,52 @@ namespace PetShop.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ItemId,Name,CreatedOn,ModifiedOn,BrandId,Price,AnimalId,Description,ItemSubcategoryId,Volume")] Item item)
+        public ActionResult Create([Bind(Include = "Name,Price,Description,Volume")] Item item, string Animal, string Brand, string Subcategory, string Category)
         {
+            if (String.IsNullOrEmpty(Animal) || String.IsNullOrEmpty(Brand) ||
+                String.IsNullOrEmpty(Subcategory) || String.IsNullOrEmpty(Animal)
+                || String.IsNullOrEmpty(item.Name) || String.IsNullOrEmpty(item.Description)
+                || (item.Price == null) || String.IsNullOrEmpty(item.Volume))
+                ModelState.AddModelError(String.Empty, "Values can't be null");
             if (ModelState.IsValid)
             {
+                var animal = db.Animals.Where(a => a.Name == Animal).FirstOrDefault();
+                if (animal == null)
+                {
+                    animal = db.Animals.Add(new Models.Animal() { Name = Animal, CreatedOn = DateTime.UtcNow });
+                    db.SaveChanges();
+                }
+                var brand = db.Brands.Where(a => a.Name == Brand).FirstOrDefault();
+                if (brand == null)
+                {
+                    brand = db.Brands.Add(new Models.Brand() { Name = Brand, CreatedOn = DateTime.UtcNow });
+                    db.SaveChanges();
+                }
+                var category = db.ItemCategories.Where(a => a.Name == Category).FirstOrDefault();
+                if (category == null)
+                {
+                    category = db.ItemCategories.Add(new Models.ItemCategory() { Name = Category, CreatedOn = DateTime.UtcNow });
+                    db.SaveChanges();
+                }
+                var subcategory = db.ItemSubcategories.Where(a => a.Name == Subcategory).FirstOrDefault();
+                if (subcategory == null)
+                {
+                    subcategory = db.ItemSubcategories.Add(new Models.ItemSubcategory() { Name = Category, CreatedOn = DateTime.UtcNow, ItemCategory = category });
+                    db.SaveChanges();
+                }
+                item.Animal = animal;
+                item.Brand = brand;
+                item.ItemSubcategory = subcategory;
+                item.CreatedOn = DateTime.UtcNow;
                 db.Items.Add(item);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.AnimalId = new SelectList(db.Animals, "AnimalId", "Name", item.AnimalId);
-            ViewBag.BrandId = new SelectList(db.Brands, "BrandId", "Name", item.BrandId);
-            ViewBag.ItemSubcategoryId = new SelectList(db.ItemSubcategories, "ItemSubcategoryId", "Name", item.ItemSubcategoryId);
+            ViewBag.Animals = db.Animals.Select(a => a.Name).ToList();
+            ViewBag.Brands = db.Brands.Select(a => a.Name).ToList();
+            ViewBag.ItemSubcategories = db.ItemSubcategories.Select(a => a.Name).ToList();
+            ViewBag.Itemcategories = db.ItemCategories.Select(a => a.Name).ToList();
             return View(item);
         }
 
@@ -94,9 +128,10 @@ namespace PetShop.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.AnimalId = new SelectList(db.Animals, "AnimalId", "Name", item.AnimalId);
-            ViewBag.BrandId = new SelectList(db.Brands, "BrandId", "Name", item.BrandId);
-            ViewBag.ItemSubcategoryId = new SelectList(db.ItemSubcategories, "ItemSubcategoryId", "Name", item.ItemSubcategoryId);
+            ViewBag.Animals = db.Animals.Select(a => a.Name).ToList();
+            ViewBag.Brands = db.Brands.Select(a => a.Name).ToList();
+            ViewBag.ItemSubcategories = db.ItemSubcategories.Select(a => a.Name).ToList();
+            ViewBag.Itemcategories = db.ItemCategories.Select(a => a.Name).ToList();
             return View(item);
         }
 
@@ -105,44 +140,46 @@ namespace PetShop.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ItemId,Name,CreatedOn,ModifiedOn,BrandId,Price,AnimalId,Description,ItemSubcategoryId,Volume")] Item item)
+        public ActionResult Edit([Bind(Include = "ItemId,Name,Price,Description,Volume")] Item item, string Animal, string Brand, string Subcategory, string Category)
         {
             if (ModelState.IsValid)
             {
+                var animal = db.Animals.Where(a => a.Name.GetHashCode().ToString() == Animal).FirstOrDefault();
+                if (animal == null)
+                {
+                    animal = db.Animals.Add(new Models.Animal() { Name = Animal, CreatedOn = DateTime.UtcNow });
+                    db.SaveChanges();
+                }
+                var brand = db.Brands.Where(a => a.Name == Brand).FirstOrDefault();
+                if (brand == null)
+                {
+                    brand = db.Brands.Add(new Models.Brand() { Name = Brand, CreatedOn = DateTime.UtcNow });
+                    db.SaveChanges();
+                }
+                var category = db.ItemCategories.Where(a => a.Name == Category).FirstOrDefault();
+                if (category == null)
+                {
+                    category = db.ItemCategories.Add(new Models.ItemCategory() { Name = Category, CreatedOn = DateTime.UtcNow });
+                    db.SaveChanges();
+                }
+                var subcategory = db.ItemSubcategories.Where(a => a.Name == Subcategory).FirstOrDefault();
+                if (subcategory == null)
+                {
+                    subcategory = db.ItemSubcategories.Add(new Models.ItemSubcategory() { Name = Category, CreatedOn = DateTime.UtcNow, ItemCategory = category });
+                    db.SaveChanges();
+                }
                 db.Entry(item).State = EntityState.Modified;
+                item.BrandId = brand.BrandId;
+                item.ItemSubcategory = subcategory;
+                item.ModifiedOn = DateTime.UtcNow;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.AnimalId = new SelectList(db.Animals, "AnimalId", "Name", item.AnimalId);
-            ViewBag.BrandId = new SelectList(db.Brands, "BrandId", "Name", item.BrandId);
-            ViewBag.ItemSubcategoryId = new SelectList(db.ItemSubcategories, "ItemSubcategoryId", "Name", item.ItemSubcategoryId);
+            ViewBag.Animals = db.Animals.Select(a => a.Name).ToList();
+            ViewBag.Brands = db.Brands.Select(a => a.Name).ToList();
+            ViewBag.ItemSubcategories = db.ItemSubcategories.Select(a => a.Name).ToList();
+            ViewBag.Itemcategories = db.ItemCategories.Select(a => a.Name).ToList();
             return View(item);
-        }
-
-        // GET: Items/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Item item = db.Items.Find(id);
-            if (item == null)
-            {
-                return HttpNotFound();
-            }
-            return View(item);
-        }
-
-        // POST: Items/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Item item = db.Items.Find(id);
-            db.Items.Remove(item);
-            db.SaveChanges();
-            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)

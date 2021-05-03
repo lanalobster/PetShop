@@ -5,10 +5,9 @@
     {
         @Html.AntiForgeryToken()
 
-        <div class="form-horizontal">
+        <div class="form-horizontal main-container">
             <h4>Store</h4>
             <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <div class="form-group">
                 <select name="storeId">
                     @foreach (var store in Model.Stores)
@@ -18,14 +17,16 @@
                 </select>
             </div>
 
-            <div class="form-group">
-                <div>
-                    @Html.ActionLink("Cancel", "Create")
+            <div class="buttons-vertical">
+
+                <div class="control-container">
+                    <input type="submit" value="OK" class="submit" id="submitButton" />
                 </div>
 
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Create" class="btn btn-default" id="submitButton" />
+                <div class="control-container">
+                    @Html.ActionLink("Cancel", "Create", new { }, new { @class = "submit" })
                 </div>
+
             </div>
         </div>
     }

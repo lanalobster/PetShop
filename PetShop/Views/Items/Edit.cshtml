@@ -4,103 +4,107 @@
     ViewBag.Title = "Edit";
 }
 
-<h2>Edit</h2>
-
-
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>Item</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.ItemId)
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.CreatedOn, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.CreatedOn, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.CreatedOn, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.ModifiedOn, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ModifiedOn, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ModifiedOn, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.BrandId, "BrandId", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("BrandId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.BrandId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Price, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.AnimalId, "AnimalId", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("AnimalId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.AnimalId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.ItemSubcategoryId, "ItemSubcategoryId", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("ItemSubcategoryId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.ItemSubcategoryId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Volume, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Volume, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Volume, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </div>
-    </div>
-}
-
-<div>
-    @Html.ActionLink("Back to List", "Index")
+<div class="center">
+    <h1>Edit</h1>
 </div>
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+
+<div class="main-container">
+    <div class="center-container">
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+        <div class="form-horizontal ">
+            <h4>Item</h4>
+            <hr />
+            @Html.HiddenFor(model => model.ItemId)
+            @{ 
+                var i = String.Format("{0}", Model.Name);
+            }
+            <div class="form-group">
+                <label for="Name">Name</label>
+                <input type="text" name="Name" id="Name" value=@String.Format("{0}", @Model.Name) />
+            </div>
+
+            <div class="form-group">
+                <label for="Brand">Brand</label>
+                <input type="text" list="Brand" name="Brand" id="BrandId" value=@String.Format("{0}", @Model.Brand.Name) />
+                <datalist id="Brand" style="max-height: 150px">
+                    @foreach (var brand in ViewBag.Brands)
+                    {
+                        i = String.Format("{0}", brand);
+                        <option value=@i.GetHashCode()>@String.Format("{0}", brand)</option>
+                    }
+                </datalist>
+            </div>
+
+            <label for="Price">Price</label>
+            <input type="number" min="0" name="Price" id="Price" value=@Convert.ToInt32(Model.Price) />
+
+            <div class="form-group">
+                <label for="Animal">Animal</label>
+                <input type="text" list="Animal" name="Animal" id="AnimalId" value=@String.Format("{0}",Model.Animal.Name) />
+                <datalist id="Animal" style="max-height: 150px">
+                    @foreach (var brand in ViewBag.Animals)
+                    {
+                        i = String.Format("{0}", brand);
+                        <option value=@i.GetHashCode()>@i</option>
+                    }
+                </datalist>
+            </div>
+
+            <div class="form-group">
+                <label for="Description">Description</label>
+                @{ 
+                    i = String.Format("{0}", Model.Description);
+                }
+                <input type="text" name="Description" id="Description" value=@i />
+            </div>
+
+            <div class="form-group">
+                <label for="Subcategory">Subcategory</label>
+                <input type="text" list="Subcategory" name="Subcategory" id="SubcategoryId" value=@String.Format("{0}", Model.ItemSubcategory.Name) />
+                <datalist id="Subcategory" style="max-height: 150px">
+                    @foreach (var brand in ViewBag.ItemSubcategories)
+                    {
+                        i = String.Format("{0}", brand);
+                        <option value=@i.GetHashCode()>@i</option>
+                    }
+                </datalist>
+            </div>
+
+            <div class="form-group">
+                <label for="Category">Category</label>
+                <input type="text" list="Category" name="Category" id="CategoryId" value=@String.Format("{0}",Model.ItemSubcategory.ItemCategory.Name) />
+                <datalist id="Category" style="max-height: 150px">
+                    @foreach (var brand in ViewBag.Itemcategories)
+                    {
+                        i = String.Format("{0}", brand);
+                        <option value=@i.GetHashCode()>@i</option>
+                    }
+                </datalist>
+            </div>
+
+            <div class="form-group">
+                <label for="Volume">Volume</label>
+                <input type="text" name="Volume" id="Volume" value=@String.Format("{0}",Model.Volume) />
+            </div>
+
+            <div class="buttons-vertical">
+                <div class="control-container">
+                    <input type="submit" value="Save" class="submit" />
+                </div>
+                <div class="control-container">
+                    @Html.ActionLink("Back to List", "Index", new { }, new { @class = "submit" })
+                </div>
+            </div>
+        </div>
+            }
+        </div>
+</div>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }

@@ -5,36 +5,37 @@
     {
         @Html.AntiForgeryToken()
 
-        <div class="form-horizontal">
-            <h4>Supplier</h4>
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <p>@String.Join(" ", Model.SupplierErrorMessages)</p>
-            <div class="form-group">
-                <label for="phoneNumber">Supplier</label>
-                <input list="customers" name="phoneNumber" id="customer" />
-                <datalist id="customers" style="max-height: 150px">
-                    @foreach (var supplier in Model.Suppliers)
-                    {
-                        <option value=@supplier.PhoneNumber>@String.Format("{0} {1}", supplier.Name, supplier.Surname)</option>
-                    }
-                </datalist>
+    <div class="form-horizontal main-container">
+        <h4>Supplier</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <p class="error">@String.Join(" ", Model.SupplierErrorMessages)</p>
+        <div class="form-group">
+            <label for="phoneNumber">Supplier</label>
+            <input type="text" list="customers" name="phoneNumber" id="customer" />
+            <datalist id="customers" style="max-height: 150px">
+                @foreach (var supplier in Model.Suppliers)
+                {
+                    <option value=@supplier.PhoneNumber>@String.Format("{0} {1}", supplier.Name, supplier.Surname)</option>
+                }
+            </datalist>
+        </div>
+
+        <div class="buttons-vertical">
+            <div class="control-container-submit">
+                <div class="control-container">
+                    <input type="submit" value="OK" class="submit" id="submitButton" />
+                </div>
+                <div class="control-container">
+                    @Html.ActionLink("Register", "RegisterSupplier", "ItemsOrders", new { @class = "submit" })
+                </div>
             </div>
 
-            <div class="form-group">
-                <div>
-                    @Html.ActionLink("Cancel", "Create")
-                </div>
-
-                <div>
-                    @Html.ActionLink("Register", "RegisterSupplier", "ItemsOrders")
-                </div>
-
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Create" class="btn btn-default" id="submitButton" />
-                </div>
+            <div class="control-container">
+                @Html.ActionLink("Cancel", "Create", new { }, new { @class = "submit" })
             </div>
         </div>
+    </div>
     }
 </div>
 

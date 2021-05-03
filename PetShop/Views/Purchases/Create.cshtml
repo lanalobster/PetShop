@@ -1,156 +1,181 @@
 ﻿@model PetShop.Models.ViewModels.PurchaseViewModel
 
 <script type="text/javascript" charset="utf-8" src="https://www.zoonman.com/projects/combobox/combobox.js"></script>
+<div class="check-container">
+    <div class="center">
+        <h1>@String.Format("New Purchase")</h1>
+    </div>
 
-<h2>New Purchase</h2>
-@if (Model.ChosenStore != null)
-{
-    <p>Store: @Model.ChosenStore.Street</p>
-    if (Model.ItemsInPurchase.Count() == 0)
+    @if (Model.ChosenStore != null)
     {
-        @Ajax.ActionLink("Change", "AddStore", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "storeButton" })
-    }
-
-}
-
-
-<table class="table">
-    <tr>
-        <th>
-            Item
-        </th>
-        <th>
-            Quantity
-        </th>
-        <th>
-            Price (per item)
-        </th>
-        <th>
-            Sale (%)
-        </th>
-        <th>
-            Subtotal
-        </th>
-        <th></th>
-    </tr>
-    @foreach (var itemInPurchase in Model.ItemsInPurchase)
-    {
-        <tr>
-            <td>
-                @itemInPurchase.ItemInStore.Item.Name
-            </td>
-            <td>
-                @itemInPurchase.Quantity
-            </td>
-            <td>
-                @itemInPurchase.ItemInStore.Item.Price
-            </td>
-            <td>
-                @{
-                    var sale = itemInPurchase.ItemInStore.Item.GetCurrentSale();
-                    var percentage = sale != null ? sale.Percentage : 0;
-                }
-                @percentage
-            </td>
-            <td>
-                @{
-                    double subtotal = itemInPurchase.Quantity * (double)(itemInPurchase.ItemInStore.Item.Price ?? 0);
-                    if (percentage != 0)
-                    {
-                        subtotal = subtotal - (subtotal * percentage / 100.0);
-                    }
+        <div class="info">
+            <div class="changable">
+                <p><span class="label">Store: </span>@String.Format("{0}", @Model.ChosenStore.Street)</p>
+                @if (Model.ItemsInPurchase.Count() == 0)
+                {
+                    @Ajax.ActionLink("Change", "AddStore", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "storeButton", @class = "control", onclick="showModal()" })
 
                 }
-                @string.Format("{0:0.00}", subtotal)
-            </td>
-            <td>
-                @Ajax.ActionLink("Remove", "RemoveItem", new { itemName = itemInPurchase.ItemInStore.Item.Name }, new AjaxOptions { UpdateTargetId = "body-content" })
-            </td>
-        </tr>
+            </div>
+        </div>
     }
-    @if (Model.ChosenCustomer != null)
-    {
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>Customer:</td>
-            <td>
-                @String.Format("{0} {1}", Model.ChosenCustomer.Name, Model.ChosenCustomer.Surname)
-                @Ajax.ActionLink("Change", "AddCustomer", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton" })
-                @Ajax.ActionLink("Remove", "RemoveCustomer", new { }, new AjaxOptions { UpdateTargetId = "body-content" })
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>Bonuses:</td>
-            <td>
-                @String.Format("{0}(uah) / {1}(%)", Model.ChosenCustomer.Bonuses, Model.ChosenCustomer.GetCustomerBonusPercentage())
-            </td>
-        </tr>
 
-    }
     @if (Model.ItemsInPurchase.Count() > 0)
     {
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>Total:</td>
-            <td>
-                @String.Format("{0: 0.00}", Model.GetTotalSum())
-            </td>
-        </tr>
+        <table class="table">
+            <tr>
+                <th>
+                    Item
+                </th>
+                <th>
+                    Quantity
+                </th>
+                <th>
+                    Price (per item)
+                </th>
+                <th>
+                    Sale (%)
+                </th>
+                <th>
+                    Subtotal
+                </th>
+                <th></th>
+            </tr>
+            @foreach (var itemInPurchase in Model.ItemsInPurchase)
+            {
+                <tr>
+                    <td>
+                        @itemInPurchase.ItemInStore.Item.Name
+                    </td>
+                    <td>
+                        @itemInPurchase.Quantity
+                    </td>
+                    <td>
+                        @itemInPurchase.ItemInStore.Item.Price
+                    </td>
+                    <td>
+                        @{
+                            var sale = itemInPurchase.ItemInStore.Item.GetCurrentSale();
+                            var percentage = sale != null ? sale.Percentage : 0;
+                        }
+                        @percentage
+                    </td>
+                    <td>
+                        @{
+                            double subtotal = itemInPurchase.Quantity * (double)(itemInPurchase.ItemInStore.Item.Price ?? 0);
+                            if (percentage != 0)
+                            {
+                                subtotal = subtotal - (subtotal * percentage / 100.0);
+                            }
 
+                        }
+                        @string.Format("{0:0.00}", subtotal)
+                    </td>
+                    <td>
+                        @Ajax.ActionLink("Remove", "RemoveItem", new { itemName = itemInPurchase.ItemInStore.Item.Name }, new AjaxOptions { UpdateTargetId = "body-content" }, new { @class = "control" })
+                    </td>
+                </tr>
+            }
+            @if (Model.ChosenCustomer != null)
+            {
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Customer:</td>
+                    <td>
+                        @String.Format("{0} {1}", Model.ChosenCustomer.Name, Model.ChosenCustomer.Surname)
+                        @Ajax.ActionLink("Change", "AddCustomer", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton", @class = "control", onclick = "showModal()" })
+                        @Ajax.ActionLink("Remove", "RemoveCustomer", new { }, new AjaxOptions { UpdateTargetId = "body-content" }, new { @class = "control" })
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Bonuses:</td>
+                    <td>
+                        @String.Format("{0}(uah) / {1}(%)", Model.ChosenCustomer.Bonuses, Model.ChosenCustomer.GetCustomerBonusPercentage())
+                    </td>
+                </tr>
+
+            }
+            @if (Model.ItemsInPurchase.Count() > 0)
+            {
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Total:</td>
+                    <td>
+                        @String.Format("{0: 0.00}", Model.GetTotalSum())
+                    </td>
+                </tr>
+
+            }
+
+        </table>
     }
 
-</table>
-
-@if (Model.ChosenStore == null)
-{
-    @Ajax.ActionLink("Choose Store", "AddStore", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "storeButton" })
-}
-else
-{
-    @Ajax.ActionLink("Add Item", "AddItem", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "myBtn", onclick= "showModal()" })
-}
-@if (Model.ChosenCustomer == null)
-{
-    @Ajax.ActionLink("Add Customer", "AddCustomer", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton" })
-}
-
-
-
-
-<div id="myModal" class="modal">
-    @if (Model.ItemErrorMessages?.Count > 0)
+<div class="buttons">
+    @if (Model.ChosenStore == null)
     {
-        @RenderPage("AddItem.cshtml", Model)
+        <div class="control-container">
+            @Ajax.ActionLink("Choose Store", "AddStore", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "storeButton", @class = "submit", onclick = "showModal()" })
+        </div>
     }
-    @if (Model.CustomerErrorMessages?.Count > 0)
+    else
     {
-        @RenderPage("AddCustomer.cshtml", Model)
+        <div class="control-container">
+            @Ajax.ActionLink("Add Item", "AddItem", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "myBtn", onclick = "showModal()", @class = "submit" })
+        </div>
+
     }
+
+    @if (Model.ChosenCustomer == null && Model.ItemsInPurchase.Count() > 0)
+    {
+        <div class="control-container">
+            @Ajax.ActionLink("Add Customer", "AddCustomer", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton", @class = "submit", onclick = "showModal()" })
+
+        </div>
+    }
+
+    @if (Model.ItemsInPurchase.Count() > 0)
+    {
+        <div class="control-container">
+            @Ajax.ActionLink("Finish", "Create", new { }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "body-content" }, new { @class = "submit" })
+        </div>
+    }
+
 </div>
+    <div class="control-container-submit">
 
-@if (Model.ItemsInPurchase.Count() > 0)
-{
-    <div>
-        @Ajax.ActionLink("Finish", "Create", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "body-content" });
     </div>
-}
+    <div class="control-container-submit">
+        <div class="control-container">
+            <button class="submit control-container" onclick="showConfirmationWindow()">Cancel</button>
+        </div>
+    </div>
 
-<div>
-    <button onclick="showConfirmationWindow()">Cancel</button>
+
+    <div id="myModal" class="modal">
+        @if (Model.ItemErrorMessages?.Count > 0)
+        {
+            @RenderPage("AddItem.cshtml", Model)
+        }
+        @if (Model.CustomerErrorMessages?.Count > 0)
+        {
+            @RenderPage("AddCustomer.cshtml", Model)
+        }
+    </div>
+
+
 </div>
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
-
-<script>
+    <script>
     var modal = document.getElementById("myModal");
     var btn = document.getElementById("myBtn");
     var registerButton = document.getElementById("customerButton");
@@ -158,16 +183,8 @@ else
 
     var span = document.getElementsByClassName("close")[0];
 
-    registerButton.onclick = function () {
-        modal.style.display = "block";
-    }
-
-    //btn.onclick = 
+    //btn.onclick =
     function showModal() {
-        modal.style.display = "block";
-    }
-
-    storeButton.onclick = function () {
         modal.style.display = "block";
     }
 
@@ -180,4 +197,4 @@ else
             window.location.href = "Index";
         }
     }
-</script>
+    </script>

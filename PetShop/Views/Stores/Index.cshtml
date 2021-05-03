@@ -4,11 +4,14 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<div class="center">
+    <h1>Stores</h1>
+</div>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+<div class="search-form">
+    @Html.ActionLink("Create New", "Create", new { }, new { id = "search-submit", @class = "submit" })
+</div>
+
 <table class="table">
     <tr>
         <th>

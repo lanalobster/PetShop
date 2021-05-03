@@ -43,6 +43,7 @@ namespace PetShop.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ItemInOrder> ItemInOrder { get; set; }
         public virtual ItemSubcategory ItemSubcategory { get; set; }
+
         public Sale GetCurrentSale()
         {
             return this.Sale.Where(s => (s.StartDate > DateTime.UtcNow) && (s.EndDate < DateTime.UtcNow)).FirstOrDefault();

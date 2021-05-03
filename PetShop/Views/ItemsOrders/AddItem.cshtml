@@ -5,38 +5,37 @@
     {
         @Html.AntiForgeryToken()
 
-        <div class="form-horizontal">
-            <h4>Item</h4>
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <p>@String.Join(" ", Model.ItemErrorMessages)</p>
-            <div class="form-group">
-                <label for="itemName">Item</label>
-                <input list="items" name="itemName" id="itemName" />
-                <datalist id="items" style="max-height: 200px">
-                    @foreach (var item in Model.Items)
-                    {
-                        <option>@String.Format(item.Name)</option>
-                    }
-                </datalist>
-                <label for="quantity">Quantity</label>
-                <input name="quantity" id="quantity" />
+    <div class="form-horizontal  main-container">
+        <h4>Item</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <p class="error">@String.Join(" ", Model.ItemErrorMessages)</p>
+        <div class="form-group">
+            <label for="itemName">Item</label>
+            <input type="text" list="items" name="itemName" id="itemName" />
+            <datalist id="items" style="max-height: 200px">
+                @foreach (var item in Model.Items)
+                {
+                    <option>@String.Format(item.Name)</option>
+                }
+            </datalist>
+            <label for="quantity">Quantity</label>
+            <input type="number" min="0" name="quantity" id="quantity" />
 
-                <label for="price">Price</label>
-                <input name="price" id="price" />
+            <label for="price">Price</label>
+            <input type="number" min="0" name="price" id="price" />
 
+        </div>
+
+        <div class="buttons-vertical">
+            <div class="control-container">
+                <input type="submit" value="OK" class="submit" id="submitButton" />
             </div>
-
-            <div class="form-group">
-                <div>
-                    @Html.ActionLink("Cancel", "Create")
-                </div>
-
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Add" class="btn btn-default" id="submitButton" />
-                </div>
+            <div class="control-container">
+                @Html.ActionLink("Cancel", "Create", new { }, new { @class = "submit" })
             </div>
         </div>
+    </div>
     }
 </div>
 

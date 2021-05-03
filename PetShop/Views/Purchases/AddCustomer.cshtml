@@ -5,35 +5,37 @@
     {
         @Html.AntiForgeryToken()
 
-        <div class="form-horizontal">
-            <h4>Customer</h4>
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <p>@String.Join(" ", Model.CustomerErrorMessages)</p>
-            <div class="form-group">
-                <label for="phoneNumber">Customer</label>
-                <input list="customers" name="phoneNumber" id="customer" />
-                <datalist id="customers" style="max-height: 150px">
-                    @foreach (var customer in Model.Customers)
-                    {
-                        <option value=@customer.PhoneNumber>@String.Format("{0} {1}", customer.Name, customer.Surname)</option>
-                    }
-                </datalist>
-            </div>
+    <div class="form-horizontal main-container">
+        <h4>Customer</h4>
+        <p class="error">@String.Join(" ", Model.CustomerErrorMessages)</p>
+        <div class="form-group">
+            <input type="text" list="customers" name="phoneNumber" id="customer" />
+            <datalist id="customers" style="max-height: 150px">
+                @foreach (var customer in Model.Customers)
+                {
+                    <option value=@customer.PhoneNumber>@String.Format("{0} {1}", customer.Name, customer.Surname)</option>
+                }
+            </datalist>
+        </div>
 
-            <div class="form-group">
-                <div>
-                    @Html.ActionLink("Cancel", "Create")
+        <div class="buttons-vertical">
+
+            <div class="control-container-submit">
+                <div class="control-container">
+                    <input type="submit" value="OK" class="submit" id="submitButton" />
                 </div>
-
-                <div>
-                    @Html.ActionLink("Register", "RegisterCustomer", "Purchases")
-                </div>
-
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Create" class="btn btn-default" id="submitButton" />
+                <div class="control-container">
+                    @Html.ActionLink("Register New", "RegisterCustomer", "Purchases", new { @class = "submit" })
                 </div>
             </div>
+
+
+            <div class="control-container">
+                @Html.ActionLink("Cancel", "Create", new { }, new { @class = "submit" })
+            </div>
+
+        </div>
+
         </div>
     }
 </div>

@@ -6,7 +6,6 @@
         @Html.AntiForgeryToken()
 
         <div class="form-horizontal">
-            <h4>Stored Quanity</h4>
             <hr />
             <input id="stockedItemId" name="itemInOrderId" type="hidden" value=@Model.ItemInOrder.ItemInOrderId>
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -15,14 +14,16 @@
                 <input type="number" value=@Model.Quantity id="quantity" name="quantity" min="0" max=@Model.Quantity>
             </div>
 
-            <div class="form-group">
-                <div>
-                    @Html.ActionLink("Cancel", "Details")
+            <div class="buttons-vertical">
+                <div class="control-container">
+                    <input type="submit" value="OK" class="submit" id="submitButton" />
                 </div>
 
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="OK" class="btn btn-default" id="submitButton" />
+                <div class="control-container">
+                    @Html.ActionLink("Cancel", "Details", new { itemsOrderId = Model.ItemInOrder.ItemsOrderId}, new { @class = "submit" })
                 </div>
+
+
             </div>
         </div>
     }

@@ -133,7 +133,7 @@ div.combobox span {
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%;
+    width: 30%;
 }
 
 .submit {
@@ -146,11 +146,40 @@ div.combobox span {
     border-color: #2e6da4;
 }
 
+input[type=submit].submit {
+    padding: 10px 16px;
+    font-size: 18px;
+    line-height: 1.3333333;
+    border-radius: 6px;
+    color: #fff;
+    background-color: #4CAF50;
+    border-color: #2e6da4;
+    margin-bottom:10px;
+}
+
+input[type=submit].submit:hover {
+    background-color: #45a049;
+}
+
+a.control:hover {
+    text-decoration: none;
+    background-color: transparent;
+    color: black;
+}
+
+a{
+    font-size: 16px;
+}
+
 a:hover {
     color: #fff;
     background-color: #419c45;
     border-color: #2e6da4;
     text-decoration: none;
+}
+
+a.submit{
+    margin-bottom:30px;
 }
 
 .button {
@@ -166,7 +195,17 @@ a:hover {
     user-select: none;
 }
 
-input[type=text], select {
+input[type=text], input[type=number], input[type=date], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 0px 0px 17px 0px;
+    display: block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.picker {
     width: 100%;
     padding: 12px 20px;
     margin: 0px 0px 17px 0px;
@@ -193,10 +232,35 @@ input[type=submit]:hover {
     background-color: #45a049;
 }
 
+
+
+.search-form {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#search-input {
+    padding: 10px;
+    margin: 5px;
+    margin-bottom: 15px;
+}
+
+#search-submit {
+    padding: 10px;
+    margin: 5px;
+    margin-bottom: 15px;
+    max-width: 10em;
+}
+
+.center {
+    text-align: center;
+}
+
 .main-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-width:300px;
 }
 
 .center-container {
@@ -211,8 +275,78 @@ input[type=submit]:hover {
     box-shadow: 5px 10px #888888;
 }
 
+.check-container {
+    border-color: black;
+    border-radius: 5px;
+    background-color: #faf7f7;
+    padding: 20px 30px 20px 30px;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    box-shadow: 2px 5px #c9c9c9;
+}
+
 .button-container {
-    margin: 35px;
+    margin: 15px;
+}
+
+.control-container {
+    margin-top:10px;
+    margin-left:5px;
+}
+
+.control-container-submit{
+    margin-bottom:15px;
+}
+
+.control {
+    margin-left: 5px;
+}
+
+#order-button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding-top: 5px;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: row;
+}
+
+.buttons-vertical {
+    display: flex;
+    flex-direction: column;
+}
+
+.changable {
+    display: flex;
+    flex-direction: row;
+}
+
+.error {
+    color: red;
+    font-weight: bold;
+}
+
+.validation-summary-errors {
+    color: red;
+    font-weight: bold;
+}
+
+.label {
+    font-weight: bold;
+    color: black;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+}
+
+.info{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align:start;
 }
 
 td, th {

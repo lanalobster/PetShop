@@ -4,11 +4,17 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<div class="center">
+    <h1>Order History</h1>
+</div>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+@if (this.User.Identity.IsAuthenticated && (!this.User.IsInRole("cashier")))
+{
+    <div class="search-form">
+        @Html.ActionLink("Create New", "Create", new { }, new { id = "search-submit", @class = "submit" })
+    </div>
+}
+
 <table class="table">
     <tr>
         <th>
@@ -34,35 +40,33 @@
 
     @foreach (var item in Model)
     {
-<tr>
-    <td>
-        @item.ItemsOrder.CreatedOn.Date.ToString("MM/dd/yyyy H:mm")
-    </td>
-    <td>
-        @{var stockedDate = item.StockedItems.Count() > 0 ? item.StockedItems[0].CreatedOn.Date.ToString("MM/dd/yyyy H:mm") : "";}
-        @stockedDate
-    </td>
+        <tr>
+            <td>
+                @item.ItemsOrder.CreatedOn.Date.ToString("MM/dd/yyyy")
+            </td>
+            <td>
+                @{var stockedDate = item.StockedItems.Count() > 0 ? item.StockedItems[0].CreatedOn.Date.ToString("MM/dd/yyyy") : "";}
+                @stockedDate
+            </td>
 
-    <td>
-        @String.Format("{0} {1}", item.ItemsOrder.Employee.Name, item.ItemsOrder.Employee.Surname)
-    </td>
-    <td>
-        @{var employee = item.StockedItems.Count() > 0 ? 
-                String.Format("{0} {1}", item.StockedItems[0].Employee.Name, item.StockedItems[0].Employee.Surname) : "";}
-        @employee
-    </td>
-    <td>
-        @String.Format("{0} {1}", item.ItemsOrder.Supplier.Name, item.ItemsOrder.Supplier.Surname)
-    </td>
-    <td>
-        @String.Format("{0:0.00}", item.ItemsOrder.TotalSum)
-    </td>
-    <td>
-        @Html.ActionLink("Edit", "Edit", new { id = item.ItemsOrder.ItemsOrderId }) |
-        @Html.ActionLink("Details", "Details", new { id = item.ItemsOrder.ItemsOrderId }) |
-        @Html.ActionLink("Delete", "Delete", new { id = item.ItemsOrder.ItemsOrderId })
-    </td>
-</tr>
+            <td>
+                @String.Format("{0} {1}", item.ItemsOrder.Employee.Name, item.ItemsOrder.Employee.Surname)
+            </td>
+            <td>
+                @{var employee = item.StockedItems.Count() > 0 ?
+                          String.Format("{0} {1}", item.StockedItems[0].Employee.Name, item.StockedItems[0].Employee.Surname) : "";}
+                @employee
+            </td>
+            <td>
+                @String.Format("{0} {1}", item.ItemsOrder.Supplier.Name, item.ItemsOrder.Supplier.Surname)
+            </td>
+            <td>
+                @String.Format("{0:0.00}", item.ItemsOrder.TotalSum)
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { id = item.ItemsOrder.ItemsOrderId }, new { @class = "control" })
+            </td>
+        </tr>
     }
 
 </table>

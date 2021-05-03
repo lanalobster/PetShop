@@ -1,96 +1,103 @@
 ﻿@model PetShop.Models.Purchase
 
-<h2>@String.Format("Receipt: ", Model.CheckNumber)</h2>
+<div class="check-container">
+    <div class="center">
+        <h1>@String.Format("Receipt #{0}", Model.CheckNumber.ToString())</h1>
+    </div>
 
-<p>Created on: @Model.CreatedOn</p>
-<p>Cashier: @String.Format("{0} {1}", Model.Employee.Name, Model.Employee.Surname)</p>
-<p>
-    Store: @String.Format("{0}", model.ItemInPurchase.FirstOrDefault()?.ItemInStore?.Store?.Street)
-</p>
+    <div class="info">
+        <p><span class="label">Created on: </span>@Model.CreatedOn</p>
+        <p><span class="label">Cashier: </span>@String.Format("{0} {1}", Model.Employee.Name, Model.Employee.Surname)</p>
+        <p>
+            <span class="label">Store: </span>@String.Format("{0}", Model.ItemInPurchase.FirstOrDefault()?.ItemInStore?.Store?.Street)
+        </p>
+    </div>
 
-<table class="table">
-    <tr>
-        <th>
-            Item
-        </th>
-        <th>
-            Quantity
-        </th>
-        <th>
-            Price (per item)
-        </th>
-        <th>
-            Sale (%)
-        </th>
-        <th>
-            Subtotal
-        </th>
-    </tr>
-    @foreach (var itemInPurchase in Model.ItemInPurchase)
-    {
-        <tr>
-            <td>
-                @itemInPurchase.ItemInStore.Item.Name
-            </td>
-            <td>
-                @itemInPurchase.Quantity
-            </td>
-            <td>
-                @itemInPurchase.ItemInStore.Item.Price
-            </td>
-            <td>
-                @{
-                    var sale = itemInPurchase.ItemInStore.Item.GetCurrentSale();
-                    var percentage = sale != null ? sale.Percentage : 0;
-                }
-                @percentage
-            </td>
-            <td>
-                @{
-                    double subtotal = itemInPurchase.Quantity * (double)(itemInPurchase.ItemInStore.Item.Price ?? 0);
-                    if (percentage != 0)
-                    {
-                        subtotal = subtotal - (subtotal * percentage / 100.0);
-                    }
+        <table class="table">
+            <tr>
+                <th>
+                    Item
+                </th>
+                <th>
+                    Quantity
+                </th>
+                <th>
+                    Price (per item)
+                </th>
+                <th>
+                    Sale (%)
+                </th>
+                <th>
+                    Subtotal
+                </th>
+            </tr>
+            @foreach (var itemInPurchase in Model.ItemInPurchase)
+            {
+                <tr>
+                    <td>
+                        @itemInPurchase.ItemInStore.Item.Name
+                    </td>
+                    <td>
+                        @itemInPurchase.Quantity
+                    </td>
+                    <td>
+                        @itemInPurchase.ItemInStore.Item.Price
+                    </td>
+                    <td>
+                        @{
+                            var sale = itemInPurchase.ItemInStore.Item.GetCurrentSale();
+                            var percentage = sale != null ? sale.Percentage : 0;
+                        }
+                        @percentage
+                    </td>
+                    <td>
+                        @{
+                            double subtotal = itemInPurchase.Quantity * (double)(itemInPurchase.ItemInStore.Item.Price ?? 0);
+                            if (percentage != 0)
+                            {
+                                subtotal = subtotal - (subtotal * percentage / 100.0);
+                            }
 
-                }
-                @string.Format("{0:0.00}", subtotal)
-            </td>
-        </tr>
-    }
-    @if (Model.Customer != null)
-    {
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>Customer:</td>
-            <td>
-                @String.Format("{0} {1}", Model.Customer.Name, Model.Customer.Surname)
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>Bonuses:</td>
-            <td>
-                @String.Format("{0}(uah) / {1}(%)", Model.Customer.Bonuses, Model.Customer.GetCustomerBonusPercentage())
-            </td>
-        </tr>
+                        }
+                        @string.Format("{0:0.00}", subtotal)
+                    </td>
+                </tr>
+            }
+            @if (Model.Customer != null)
+            {
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Customer:</td>
+                    <td>
+                        @String.Format("{0} {1}", Model.Customer.Name, Model.Customer.Surname)
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Bonuses:</td>
+                    <td>
+                        @String.Format("{0}(uah) / {1}(%)", Model.Customer.Bonuses, Model.Customer.GetCustomerBonusPercentage())
+                    </td>
+                </tr>
 
-    }
-    <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>Total:</td>
-        <td>
-            @String.Format("{0: 0.00}", Model.TotalSum)
-        </td>
-    </tr>
-</table>
+            }
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>Total:</td>
+                <td>
+                    @String.Format("{0: 0.00}", Model.TotalSum)
+                </td>
+            </tr>
+        </table>
 
-<div>
-    @Html.ActionLink("Go Back", "Index", "Purchases")
-</div>
+
+        <div class="search-form">
+            @Html.ActionLink("Go Back", "Index", "Purchases", new { id = "search-submit", @class = "submit" })
+        </div>
+    </div>

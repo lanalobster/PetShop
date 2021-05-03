@@ -35,41 +35,39 @@
 
     @foreach (var item in Model)
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Volume)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Animal.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Brand.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ItemSubcategory.ItemCategory.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ItemSubcategory.Name)
-            </td>
-            @if (this.User.Identity.IsAuthenticated && (!this.User.IsInRole("cashier")))
-            {
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.ItemId }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.ItemId }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.ItemId })
-                </td>
-            }
+<tr>
+    <td>
+        @Html.DisplayFor(modelItem => item.Name)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Price)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Description)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Volume)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Animal.Name)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Brand.Name)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.ItemSubcategory.ItemCategory.Name)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.ItemSubcategory.Name)
+    </td>
+    @if (this.User.Identity.IsAuthenticated && (!this.User.IsInRole("cashier")))
+    {
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.ItemId }, new { @class = "control" })
+        </td>
+    }
 
-        </tr>
+</tr>
     }
 
 </table>

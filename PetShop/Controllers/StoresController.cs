@@ -33,6 +33,9 @@ namespace PetShop.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Street")] Store store, string city, string region)
         {
+            if (String.IsNullOrEmpty(city) || String.IsNullOrEmpty(region) ||
+                String.IsNullOrEmpty(store.Street))
+                ModelState.AddModelError(String.Empty, "Values can't be null");
             var cityToAdd = db.Cities.Where(c => c.Name == city).FirstOrDefault();
             var regionToAdd = db.Regions.Where(c => c.Name == region).FirstOrDefault();
             if (ModelState.IsValid)
@@ -43,7 +46,7 @@ namespace PetShop.Controllers
                 }
                 if (cityToAdd == null)
                 {
-                    cityToAdd = db.Cities.Add(new City { CreatedOn = DateTime.UtcNow, Region = regionToAdd });
+                    cityToAdd = db.Cities.Add(new City { CreatedOn = DateTime.UtcNow, Region = regionToAdd, Name = city });
                 }
                 store.CreatedOn = DateTime.UtcNow;
                 store.City = cityToAdd;
@@ -51,6 +54,8 @@ namespace PetShop.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
+            ViewBag.Cities = db.Cities;
+            ViewBag.Regions = db.Regions;
             return View(store);
         }
 

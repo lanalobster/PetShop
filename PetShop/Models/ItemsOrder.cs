@@ -33,16 +33,5 @@ namespace PetShop.Models
         public virtual ICollection<ItemInOrder> ItemInOrder { get; set; }
         public virtual Supplier Supplier { get; set; }
         public virtual Store Store { get; set; }
-
-        public double GetTotalSum()
-        {
-            double total = 0;
-            foreach (var itemInOrder in this.ItemInOrder)
-            {
-                double subtotal = (double)(itemInOrder.Quantity * itemInOrder.Price ?? 0);
-                total += subtotal;
-            }
-            return total;
-        }
     }
 }

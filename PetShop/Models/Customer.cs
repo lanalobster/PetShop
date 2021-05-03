@@ -35,7 +35,6 @@ namespace PetShop.Models
         public virtual City City { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Purchase> Purchase { get; set; }
-
         public int GetCustomerBonusPercentage()
         {
             if (this.Bonuses < 2000)

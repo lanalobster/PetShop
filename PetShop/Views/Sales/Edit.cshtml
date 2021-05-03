@@ -25,7 +25,7 @@
             var endDate = Model.EndDate.Year + "-" + Model.EndDate.Month.ToString().PadLeft(2, '0') + "-" + Model.EndDate.Day.ToString().PadLeft(2, '0');
         }
         <div class="col-md-10">
-            <input type="date" id="startDate" name="StartDate"
+            <input class="picker" type="date" id="startDate" name="StartDate"
                    value=@startDate>
             @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
         </div>
@@ -34,7 +34,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.EndDate, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            <input type="date" id="endDate" name="EndDate"
+            <input class="picker" type="date" id="endDate" name="EndDate"
                    value=@endDate>
             @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
         </div>
@@ -58,7 +58,7 @@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Save" class="btn btn-default" />
+            <input type="submit" value="Save" class="submit" />
         </div>
     </div>
 </div>

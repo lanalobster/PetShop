@@ -24,7 +24,7 @@ namespace PetShop.Models
         {
             throw new UnintentionalCodeFirstException();
         }
-
+    
         public virtual DbSet<Animal> Animals { get; set; }
         public virtual DbSet<Brand> Brands { get; set; }
         public virtual DbSet<City> Cities { get; set; }

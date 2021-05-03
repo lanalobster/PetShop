@@ -1,18 +1,22 @@
 ﻿@model IEnumerable<PetShop.Models.Item>
 
-<h2>Items</h2>
+<div class="center">
+    <h1>Items</h1>
+</div>
 
-@using (Ajax.BeginForm("Search", new AjaxOptions { UpdateTargetId = "items" }))
+
+@using (Ajax.BeginForm("Search", new { }, new AjaxOptions { UpdateTargetId = "items" }, new { @class = "search-form" }))
 {
-    <input type="text" name="name" />
-    <input type="submit" value="Search" />
+
+    <input type="text" name="name" id="search-input" />
+    <input type="submit" value="Search" id="search-submit" />
 }
 
 @if (this.User.Identity.IsAuthenticated && (!this.User.IsInRole("cashier")))
 {
-    <p>
-        @Html.ActionLink("Create New", "Create")
-    </p>
+    <div class="search-form">
+        @Html.ActionLink("Create New", "Create", new { }, new { id = "search-submit", @class = "submit" })
+    </div>
 }
 
 
@@ -43,11 +47,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.ItemSubcategory)
             </th>
-            @if (this.User.Identity.IsAuthenticated && (!this.User.IsInRole("cashier")))
-            {
-                <th></th>
-            }
-
         </tr>
 
         @foreach (var item in Model)
@@ -77,15 +76,13 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.ItemSubcategory.Name)
                 </td>
-                @if (this.User.Identity.IsAuthenticated && (!this.User.IsInRole("cashier")))
+                @*@if (this.User.Identity.IsAuthenticated && (!this.User.IsInRole("cashier")))
                 {
                     <td>
-                        @Html.ActionLink("Edit", "Edit", new { id = item.ItemId }) |
-                        @Html.ActionLink("Details", "Details", new { id = item.ItemId }) |
-                        @Html.ActionLink("Delete", "Delete", new { id = item.ItemId })
+                        @Html.ActionLink("Edit", "Edit", new { id = item.ItemId }, new { @class = "control" })
                     </td>
-                }
-               
+                }*@
+
             </tr>
         }
 

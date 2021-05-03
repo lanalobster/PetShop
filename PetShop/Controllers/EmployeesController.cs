@@ -49,8 +49,12 @@ namespace PetShop.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "EmployeeId,Name,Surname,DateOfBirth,EmailAddress,PhoneNumber,TitleId,Salary")] Employee employee)
+        public ActionResult Create([Bind(Include = "Name,Surname,DateOfBirth,EmailAddress,PhoneNumber,TitleId,Salary")] Employee employee)
         {
+            if (String.IsNullOrEmpty(employee.Name) ||
+                String.IsNullOrEmpty(employee.EmailAddress) || String.IsNullOrEmpty(employee.Surname)
+                || String.IsNullOrEmpty(employee.PhoneNumber))
+                ModelState.AddModelError(String.Empty, "Values can't be null");
             if (ModelState.IsValid)
             {
                 employee.DateOfBirth = DateTime.Parse(employee.DateOfBirth.ToString("yyyy-MM-dd HH:mm:ss.fff"));
@@ -59,7 +63,7 @@ namespace PetShop.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Register", "Account", new { email = employee.EmailAddress});
             }
-
+            
             ViewBag.TitleId = new SelectList(db.Titles, "TitleId", "Name", employee.TitleId);
             return View(employee);
         }

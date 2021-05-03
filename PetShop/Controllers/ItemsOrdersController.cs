@@ -163,19 +163,19 @@ namespace PetShop.Controllers
         {
             var orderToAdd = new ItemsOrder();
             var date = DateTime.UtcNow.Date;
-            orderToAdd.Store = currentOrder.ChosenStore;
+            orderToAdd.StoreId = currentOrder.ChosenStore.StoreId;
             orderToAdd.CreatedOn = DateTime.UtcNow;
-            orderToAdd.Employee = db.Employees.Where(e => e.EmailAddress == User.Identity.Name).FirstOrDefault();
+            orderToAdd.EmployeeId = db.Employees.Where(e => e.EmailAddress == User.Identity.Name).FirstOrDefault()?.EmployeeId ?? 60;
             orderToAdd.TotalSum = (decimal?)currentOrder.GetTotalSum();
             if (currentOrder.ChosenSupplier?.SupplierId == 0)
             {
                 currentOrder.ChosenSupplier = db.Suppliers.Add(currentOrder.ChosenSupplier);
             }
-            orderToAdd.Supplier = currentOrder.ChosenSupplier;
+            orderToAdd.SupplierId = currentOrder.ChosenSupplier.SupplierId;
             var addedOrder = db.ItemsOrders.Add(orderToAdd);
             foreach (var itemInOrder in currentOrder.ItemsInOrder)
             {
-                itemInOrder.ItemsOrder = addedOrder;
+                itemInOrder.ItemsOrderId = addedOrder.ItemsOrderId;
                 db.ItemInOrders.Add(itemInOrder);
                 db.SaveChanges();
             }
@@ -195,7 +195,7 @@ namespace PetShop.Controllers
                 var stockedItem = new StockedItem()
                 {
                     ItemInOrder = itemInOrder,
-                    Employee = employee,
+                    EmployeeId = employee.EmployeeId,
                     Quantity = itemInOrder.Quantity,
                 };
                 currentOrder.StockedItems.Add(stockedItem);
@@ -215,7 +215,7 @@ namespace PetShop.Controllers
                     CreatedOn = DateTime.UtcNow,
                     ItemInOrder = stockedItem.ItemInOrder,
                     Employee = employee,
-                    Quantity = stockedItem.ItemInOrder.Quantity,
+                    Quantity = stockedItem.Quantity,
                 };
                 var addedStockedItem = db.StockedItems.Add(stockedItemToAdd);
                 db.SaveChanges();
@@ -225,7 +225,7 @@ namespace PetShop.Controllers
                     Item = stockedItem.ItemInOrder.Item,
                     Quantity = addedStockedItem.Quantity,
                     StockedItem = addedStockedItem,
-                    Store = order.Store,
+                    StoreId = order.Store.StoreId,
                 };
                 db.ItemInStores.Add(itemInStore);
                 db.SaveChanges();

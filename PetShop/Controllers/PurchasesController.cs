@@ -180,15 +180,13 @@ namespace PetShop.Controllers
             var date = DateTime.UtcNow.Date;
             purchaseToAdd.CheckNumber = (db.Purchases.Where(p => DbFunctions.TruncateTime(p.CreatedOn) == date).Count() + 1).ToString();
             purchaseToAdd.CreatedOn = DateTime.UtcNow;
-            purchaseToAdd.Employee = db.Employees.Where(e => e.EmailAddress == User.Identity.Name).FirstOrDefault();
+            purchaseToAdd.EmployeeId = db.Employees.Where(e => e.EmailAddress == User.Identity.Name).FirstOrDefault()?.EmployeeId ?? 60;
             if(currentPurchase.ChosenCustomer?.CustomerId == 0)
             {
                 currentPurchase.ChosenCustomer =  db.Customers.Add(currentPurchase.ChosenCustomer);
             }
-            purchaseToAdd.Customer = currentPurchase.ChosenCustomer;
+            purchaseToAdd.CustomerId = currentPurchase.ChosenCustomer?.CustomerId;
             purchaseToAdd.TotalSum = (decimal?)currentPurchase.GetTotalSum();
-            if(currentPurchase.ChosenCustomer != null)
-                purchase.Customer.Bonuses += Convert.ToInt32(purchase.TotalSum);
             var addedPurchase = db.Purchases.Add(purchaseToAdd);
             foreach (var itemInPurchase in currentPurchase.ItemsInPurchase)
             {

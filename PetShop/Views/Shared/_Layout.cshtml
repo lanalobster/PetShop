@@ -81,35 +81,17 @@
                     @{
                         if (this.User.Identity.IsAuthenticated && (this.User.IsInRole("manager") || this.User.IsInRole("admin")))
                         {
-                            <li class="dropdown">
-                                <button onclick="myFunction()" class="dropbtn">Items</button>
-                                <div id="myDropdown" class="dropdown-content">
-                                    @Html.ActionLink("Items", "Index", "Items")
-                                    @Html.ActionLink("Brands", "Index", "Brands")
-                                    @Html.ActionLink("Categories", "Index", "ItemCategories")
-                                    @Html.ActionLink("Subcategories", "Index", "ItemSubcategories")
-                                    @Html.ActionLink("Animals", "Index", "Animals")
-                                </div>
+                            <li>
+                                @Html.ActionLink("Items", "Index", "Items")
                             </li>
                             <li>@Html.ActionLink("Purchases", "Index", "Purchases")</li>
                             <li>@Html.ActionLink("Orders", "Index", "ItemsOrders")</li>
                             <li>@Html.ActionLink("Sales", "Index", "Sales")</li>
-                            <li class="dropdown">
-                                <button onclick="myFunction1()" class="dropbtn">Stores</button>
-                                <div id="myDropdown1" class="dropdown-content">
-                                    @Html.ActionLink("Stores", "Index", "Stores")
-                                    @Html.ActionLink("Cities", "Index", "Cities")
-                                    @Html.ActionLink("Regions", "Index", "Regions")
-                                </div>
+                            <li>
+                                @Html.ActionLink("Stores", "Index", "Stores")
                             </li>
-                            <li class="dropdown">
-                                <button onclick="myFunction2()" class="dropbtn">People</button>
-                                <div id="myDropdown2" class="dropdown-content">
-                                    @Html.ActionLink("Customers", "Index", "Customers")
-                                    @Html.ActionLink("Suppliers", "Index", "Suppliers")
-                                    @Html.ActionLink("Employees", "Index", "Employees")
-                                    @Html.ActionLink("Titles", "Index", "Titles")
-                                </div>
+                            <li>
+                                @Html.ActionLink("Employees", "Index", "Employees")
                             </li>
                         }
                     }

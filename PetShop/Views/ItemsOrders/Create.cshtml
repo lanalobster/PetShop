@@ -1,130 +1,137 @@
 ﻿@model PetShop.Models.ViewModels.OrderViewModel
 
-<h2>New Order</h2>
+<div class="check-container">
 
-<table class="table">
-    <tr>
-        <th>
-            Item
-        </th>
-        <th>
-            Quantity
-        </th>
-        <th>
-            Price (per item)
-        </th>
-        <th>
-            Subtotal
-        </th>
-        <th></th>
-    </tr>
-    @foreach (var itemInOrder in Model.ItemsInOrder)
-    {
-        <tr>
-            <td>
-                @itemInOrder.Item.Name
-            </td>
-            <td>
-                @itemInOrder.Quantity
-            </td>
-            <td>
-                @itemInOrder.Price
-            </td>
-            <td>
-                @{
-                    double subtotal = itemInOrder.Quantity * (double)(itemInOrder.Price ?? 0);
-                }
-                @string.Format("{0:0.00}", subtotal)
-            </td>
-            <td>
-                @Ajax.ActionLink("Remove", "RemoveItem", new { itemName = itemInOrder.Item.Name }, new AjaxOptions { UpdateTargetId = "body-content" })
-            </td>
-        </tr>
-    }
-    @if (Model.ChosenSupplier != null)
-    {
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>Supplier:</td>
-            <td>
-                @String.Format("{0} {1}", Model.ChosenSupplier.Name, Model.ChosenSupplier.Surname)
-                @Ajax.ActionLink("Change", "AddSupplier", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton" })
-            </td>
-        </tr>
+    <div class="center">
+        <h1>@String.Format("New Order")</h1>
+    </div>
 
-    }
-    @if (Model.ChosenStore != null)
-    {
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>Store:</td>
-            <td>
-                @String.Format("{0}", Model.ChosenStore.Street)
-                @Ajax.ActionLink("Change", "AddStore", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "storeButton" })
-            </td>
-        </tr>
 
-    }
+    <div class="info">
+        @if (Model.ChosenSupplier != null)
+        {
+            <div class="changable">
+                <p>
+                    <span class="label">Supplier: </span> @String.Format("{0} {1}", Model.ChosenSupplier.Name, Model.ChosenSupplier.Surname)
+                </p>
+                @Ajax.ActionLink("Change", "AddSupplier", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton", @class = "control" })
+            </div>
+        }
+        @if (Model.ChosenStore != null)
+        {
+            <div class="changable">
+                <p>
+                    <span class="label">Store: </span> @String.Format("{0}", Model.ChosenStore.Street)
+                </p>
+                @Ajax.ActionLink("Change", "AddStore", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "storeButton", @class = "control" })
+            </div>
+        }
+    </div>
+
     @if (Model.ItemsInOrder.Count() > 0)
     {
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>Total:</td>
-            <td>
-                @String.Format("{0: 0.00}", Model.GetTotalSum())
-            </td>
-        </tr>
+        <table class="table">
+            <tr>
+                <th>
+                    Item
+                </th>
+                <th>
+                    Quantity
+                </th>
+                <th>
+                    Price (per item)
+                </th>
+                <th>
+                    Subtotal
+                </th>
+                <th></th>
+            </tr>
+            @foreach (var itemInOrder in Model.ItemsInOrder)
+            {
+                <tr>
+                    <td>
+                        @itemInOrder.Item.Name
+                    </td>
+                    <td>
+                        @itemInOrder.Quantity
+                    </td>
+                    <td>
+                        @itemInOrder.Price
+                    </td>
+                    <td>
+                        @{
+                            double subtotal = itemInOrder.Quantity * (double)(itemInOrder.Price ?? 0);
+                        }
+                        @string.Format("{0:0.00}", subtotal)
+                    </td>
+                    <td>
+                        @Ajax.ActionLink("Remove", "RemoveItem", new { itemName = itemInOrder.Item.Name }, new AjaxOptions { UpdateTargetId = "body-content" }, new { @class = "control" })
+                    </td>
+                </tr>
+            }
 
+            @if (Model.ItemsInOrder.Count() > 0)
+            {
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>Total:</td>
+                    <td>
+                        @String.Format("{0: 0.00}", Model.GetTotalSum())
+                    </td>
+                </tr>
+
+            }
+
+        </table>
     }
+<div class="buttons-vertical">
+    <div class="buttons">
+        @if (Model.ChosenSupplier == null)
+        {
+            <div class="control-container">
+                @Ajax.ActionLink("Add Supplier", "AddSupplier", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton", @class = "submit" })
+            </div>
+        }
 
-</table>
+        @if (Model.ChosenStore == null)
+        {
+            <div class="control-container">
+                @Ajax.ActionLink("Add Store", "AddStore", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "storeButton", @class = "submit" })
+            </div>
+        }
+        <div class="control-container">
+            @Ajax.ActionLink("Add Item", "AddItem", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "myBtn", @class = "submit" })
+        </div>
 
-@if (Model.ChosenSupplier == null)
-{
-    @Ajax.ActionLink("Add Supplier", "AddSupplier", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "customerButton" })
-}
+        <div id="myModal" class="modal">
+            @if (Model.ItemErrorMessages?.Count > 0)
+            {
+                @RenderPage("AddItem.cshtml", Model)
+            }
+            @if (Model.SupplierErrorMessages?.Count > 0)
+            {
+                @RenderPage("AddSupplier.cshtml", Model)
+            }
+        </div>
 
-@if (Model.ChosenStore == null)
-{
-    @Ajax.ActionLink("Add Store", "AddStore", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "storeButton" })
-}
-
-@Ajax.ActionLink("Add Item", "AddItem", new { }, new AjaxOptions { UpdateTargetId = "myModal" }, new { id = "myBtn" })
-
-
-<div id="myModal" class="modal">
-    @if (Model.ItemErrorMessages?.Count > 0)
-    {
-        @RenderPage("AddItem.cshtml", Model)
-    }
-    @if (Model.SupplierErrorMessages?.Count > 0)
-    {
-        @RenderPage("AddSupplier.cshtml", Model)
-    }
-</div>
-
-@if (Model.ItemsInOrder.Count() > 0 && Model.ChosenSupplier != null && Model.ChosenStore != null)
-{
-    <div>
-        @Ajax.ActionLink("Finish", "Create", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "body-content" });
+        @if (Model.ItemsInOrder.Count() > 0 && Model.ChosenSupplier != null && Model.ChosenStore != null)
+        {
+            <div class="control-container">
+                @Ajax.ActionLink("Finish", "Create", new { }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "body-content" }, new { @class = "submit" })
+            </div>
+        }
     </div>
-}
-
-<div>
-    <button onclick="showConfirmationWindow()">Cancel</button>
+    <div id="order-button-container">
+        <button class="submit control-container" onclick="showConfirmationWindow()">Cancel</button>
+    </div>
+    
 </div>
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
-
-<script>
+    <script>
     var modal = document.getElementById("myModal");
     var btn = document.getElementById("myBtn");
     var registerButton = document.getElementById("customerButton");
@@ -152,4 +159,4 @@
             window.location.href = "Index";
         }
     }
-</script>
+    </script>
