@@ -1,0 +1,574 @@
+
+CREATE TABLE Animal
+( 
+	AnimalId             integer IDENTITY ( 1,1 ),
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL ,
+	Name                 varchar(50)  NOT NULL 
+)
+go
+
+
+
+ALTER TABLE Animal
+	ADD CONSTRAINT XPKAnimal PRIMARY KEY  CLUSTERED (AnimalId ASC)
+go
+
+
+
+CREATE TABLE Brand
+( 
+	BrandId              integer IDENTITY ( 1,1 ) ,
+	Name                 varchar(50)  NOT NULL ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL 
+)
+go
+
+
+
+ALTER TABLE Brand
+	ADD CONSTRAINT XPKBrand PRIMARY KEY  CLUSTERED (BrandId ASC)
+go
+
+
+
+CREATE TABLE City
+( 
+	CityId               integer IDENTITY ( 1,1 ) ,
+	Name                 varchar(50)  NOT NULL ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL ,
+	RegionId             integer  NULL 
+)
+go
+
+
+
+ALTER TABLE City
+	ADD CONSTRAINT XPKCity PRIMARY KEY  CLUSTERED (CityId ASC)
+go
+
+
+
+CREATE TABLE Customer
+( 
+	CustomerId           integer IDENTITY ( 1,1 ) ,
+	Name                 varchar(50)  NOT NULL ,
+	Surname              varchar(50)  NOT NULL ,
+	DateOfBirth          datetime  NOT NULL ,
+	EmailAddress         varchar(70)  NULL ,
+	PhoneNumber          varchar(20)  NULL ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL ,
+	Bonuses              integer  NOT NULL ,
+	Street               varchar(50)  NULL ,
+	CityId               integer  NULL 
+)
+go
+
+
+
+ALTER TABLE Customer
+	ADD CONSTRAINT XPKCustomer PRIMARY KEY  CLUSTERED (CustomerId ASC)
+go
+
+
+
+CREATE TABLE Employee
+( 
+	EmployeeId           integer IDENTITY ( 1,1 ) ,
+	Name                 varchar(50)  NOT NULL ,
+	Surname              varchar(50)  NOT NULL ,
+	DateOfBirth          datetime  NOT NULL ,
+	EmailAddress         varchar(70)  NULL ,
+	PhoneNumber          varchar(20)  NULL ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL ,
+	TitleId              integer  NOT NULL ,
+	Salary               integer  NOT NULL 
+)
+go
+
+
+
+ALTER TABLE Employee
+	ADD CONSTRAINT XPKEmployee PRIMARY KEY  CLUSTERED (EmployeeId ASC)
+go
+
+
+
+CREATE TABLE Item
+( 
+	ItemId               integer IDENTITY ( 1,1 ) ,
+	Name                 varchar(70)  NOT NULL ,
+	CreatedOn            datetime  NULL ,
+	ModifiedOn           datetime  NULL ,
+	BrandId              integer  NULL ,
+	Price                integer  NOT NULL ,
+	AnimalId             integer  NULL ,
+	Description          varchar(max)  NULL ,
+	ItemSubcategoryId    integer  NULL ,
+	Volume               varchar(50)  NOT NULL 
+)
+go
+
+
+
+ALTER TABLE Item
+	ADD CONSTRAINT XPKItem PRIMARY KEY  CLUSTERED (ItemId ASC)
+go
+
+
+
+CREATE TABLE ItemCategory
+( 
+	ItemCategoryId       integer IDENTITY ( 1,1 ) ,
+	Name                 varchar(50)  NULL ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL 
+)
+go
+
+
+
+ALTER TABLE ItemCategory
+	ADD CONSTRAINT XPKItemCategory PRIMARY KEY  CLUSTERED (ItemCategoryId ASC)
+go
+
+
+
+CREATE TABLE ItemInOrder
+( 
+	ItemInOrderId        integer IDENTITY ( 1,1 ) ,
+	Quantity             integer  NOT NULL ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL ,
+	ItemId               integer  NOT NULL ,
+	ItemsOrderId         integer  NOT NULL ,
+	Price                integer  NOT NULL 
+)
+go
+
+
+
+ALTER TABLE ItemInOrder
+	ADD CONSTRAINT XPKItemInOrder PRIMARY KEY  CLUSTERED (ItemInOrderId ASC)
+go
+
+
+
+CREATE TABLE ItemInPurchase
+( 
+	PurchaseId           integer  NOT NULL ,
+	ItemInStoreId        integer  NOT NULL ,
+	ItemInPurchaseId     integer IDENTITY ( 1,1 ) ,
+	Quantity             integer  NOT NULL ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL 
+)
+go
+
+
+
+ALTER TABLE ItemInPurchase
+	ADD CONSTRAINT XPKItemInPurchase PRIMARY KEY  CLUSTERED (ItemInPurchaseId ASC)
+go
+
+
+
+CREATE TABLE ItemInStore
+( 
+	StoreId              integer  NOT NULL ,
+	ItemId               integer  NOT NULL ,
+	ItemInStoreId        integer IDENTITY ( 1,1 ) ,
+	Quantity             integer  NOT NULL ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL 
+)
+go
+
+
+
+ALTER TABLE ItemInStore
+	ADD CONSTRAINT XPKItemInStore PRIMARY KEY  CLUSTERED (ItemInStoreId ASC)
+go
+
+
+
+CREATE TABLE ItemsOrder
+( 
+	TotalSum             integer  NOT NULL ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL ,
+	ItemsOrderId         integer IDENTITY ( 1,1 ) ,
+	SupplierId           integer  NOT NULL ,
+	EmployeeId           integer  NOT NULL 
+)
+go
+
+
+
+ALTER TABLE ItemsOrder
+	ADD CONSTRAINT XPKItemsOrder PRIMARY KEY  CLUSTERED (ItemsOrderId ASC)
+go
+
+
+
+CREATE TABLE ItemSubcategory
+( 
+	ItemSubcategoryId    integer IDENTITY ( 1,1 ) ,
+	ItemCategoryId       integer  NULL ,
+	Name                 varchar(50)  NOT NULL ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL 
+)
+go
+
+
+
+ALTER TABLE ItemSubcategory
+	ADD CONSTRAINT XPKItemSubcategory PRIMARY KEY  CLUSTERED (ItemSubcategoryId ASC)
+go
+
+
+
+CREATE TABLE Purchase
+( 
+	PurchaseId           integer IDENTITY ( 1,1 ) ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL ,
+	TotalSum             integer  NOT NULL ,
+	EmployeeId           integer  NOT NULL ,
+	CheckNumber          char(20)  NOT NULL ,
+	CustomerId           integer  NULL 
+)
+go
+
+
+
+ALTER TABLE Purchase
+	ADD CONSTRAINT XPKPurchase PRIMARY KEY  CLUSTERED (PurchaseId ASC)
+go
+
+
+
+CREATE TABLE Region
+( 
+	RegionId             integer IDENTITY ( 1,1 ) ,
+	Name                 varchar(50)  NOT NULL ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL 
+)
+go
+
+
+
+ALTER TABLE Region
+	ADD CONSTRAINT XPKRegion PRIMARY KEY  CLUSTERED (RegionId ASC)
+go
+
+
+
+CREATE TABLE Sale
+( 
+	SaleId               integer IDENTITY ( 1,1 ) ,
+	StartDate            datetime  NOT NULL ,
+	EndDate              datetime  NOT NULL ,
+	Percentage           integer  NOT NULL ,
+	CtreadtedOn          datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL ,
+	ItemId               integer  NOT NULL 
+)
+go
+
+
+
+ALTER TABLE Sale
+	ADD CONSTRAINT XPKSale PRIMARY KEY  CLUSTERED (SaleId ASC)
+go
+
+
+
+CREATE TABLE StockedItem
+( 
+	StockedItemd         integer IDENTITY ( 1,1 ) ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL ,
+	Quantity             integer  NOT NULL ,
+	EmployeeId           integer  NOT NULL ,
+	ItemInStoreId        integer  NOT NULL ,
+	ItemInOrderId        integer  NOT NULL 
+)
+go
+
+
+
+ALTER TABLE StockedItem
+	ADD CONSTRAINT XPKStockedItem PRIMARY KEY  CLUSTERED (StockedItemd ASC)
+go
+
+
+
+CREATE TABLE Store
+( 
+	StoreId              integer IDENTITY ( 1,1 ) ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL ,
+	Street               varchar(50)  NOT NULL ,
+	CityId               integer  NOT NULL 
+)
+go
+
+
+
+ALTER TABLE Store
+	ADD CONSTRAINT XPKStore PRIMARY KEY  CLUSTERED (StoreId ASC)
+go
+
+
+
+CREATE TABLE Supplier
+( 
+	SupplierId           integer IDENTITY ( 1,1 ) ,
+	Name                 varchar(50)  NOT NULL ,
+	Surname              varchar(50)  NOT NULL ,
+	PhoneNumber          varchar(20)  NULL ,
+	Rating               integer  NOT NULL ,
+	EmailAddress         varchar(70)  NULL ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL ,
+	CityId               integer  NOT NULL ,
+	Street               varchar(50)  NOT NULL 
+)
+go
+
+
+
+ALTER TABLE Supplier
+	ADD CONSTRAINT XPKSupplier PRIMARY KEY  CLUSTERED (SupplierId ASC)
+go
+
+
+
+CREATE TABLE Title
+( 
+	TitleId              integer IDENTITY ( 1,1 ) ,
+	Name                 varchar(70)  NOT NULL ,
+	CreatedOn            datetime  NOT NULL ,
+	ModifiedOn           datetime  NULL 
+)
+go
+
+
+
+ALTER TABLE Title
+	ADD CONSTRAINT XPKTitle PRIMARY KEY  CLUSTERED (TitleId ASC)
+go
+
+
+
+
+ALTER TABLE City
+	ADD CONSTRAINT R_63 FOREIGN KEY (RegionId) REFERENCES Region(RegionId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE Customer
+	ADD CONSTRAINT R_65 FOREIGN KEY (CityId) REFERENCES City(CityId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE Employee
+	ADD CONSTRAINT R_71 FOREIGN KEY (TitleId) REFERENCES Title(TitleId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE Item
+	ADD CONSTRAINT R_16 FOREIGN KEY (BrandId) REFERENCES Brand(BrandId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE Item
+	ADD CONSTRAINT R_68 FOREIGN KEY (AnimalId) REFERENCES Animal(AnimalId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE Item
+	ADD CONSTRAINT R_75 FOREIGN KEY (ItemSubcategoryId) REFERENCES ItemSubcategory(ItemSubcategoryId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE ItemInOrder
+	ADD CONSTRAINT R_72 FOREIGN KEY (ItemId) REFERENCES Item(ItemId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE ItemInOrder
+	ADD CONSTRAINT R_73 FOREIGN KEY (ItemsOrderId) REFERENCES ItemsOrder(ItemsOrderId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE ItemInPurchase
+	ADD CONSTRAINT R_59 FOREIGN KEY (PurchaseId) REFERENCES Purchase(PurchaseId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE ItemInPurchase
+	ADD CONSTRAINT R_61 FOREIGN KEY (ItemInStoreId) REFERENCES ItemInStore(ItemInStoreId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE ItemInStore
+	ADD CONSTRAINT R_54 FOREIGN KEY (StoreId) REFERENCES Store(StoreId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE ItemInStore
+	ADD CONSTRAINT R_55 FOREIGN KEY (ItemId) REFERENCES Item(ItemId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE ItemsOrder
+	ADD CONSTRAINT R_41 FOREIGN KEY (SupplierId) REFERENCES Supplier(SupplierId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE ItemsOrder
+	ADD CONSTRAINT R_74 FOREIGN KEY (EmployeeId) REFERENCES Employee(EmployeeId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE ItemSubcategory
+	ADD CONSTRAINT R_76 FOREIGN KEY (ItemCategoryId) REFERENCES ItemCategory(ItemCategoryId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE Purchase
+	ADD CONSTRAINT R_45 FOREIGN KEY (EmployeeId) REFERENCES Employee(EmployeeId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE Purchase
+	ADD CONSTRAINT R_64 FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE Sale
+	ADD CONSTRAINT R_53 FOREIGN KEY (ItemId) REFERENCES Item(ItemId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE StockedItem
+	ADD CONSTRAINT R_58 FOREIGN KEY (EmployeeId) REFERENCES Employee(EmployeeId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE StockedItem
+	ADD CONSTRAINT R_57 FOREIGN KEY (ItemInStoreId) REFERENCES ItemInStore(ItemInStoreId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE StockedItem
+	ADD CONSTRAINT R_56 FOREIGN KEY (ItemInOrderId) REFERENCES ItemInOrder(ItemInOrderId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE Store
+	ADD CONSTRAINT R_66 FOREIGN KEY (CityId) REFERENCES City(CityId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
+
+
+
+
+ALTER TABLE Supplier
+	ADD CONSTRAINT R_67 FOREIGN KEY (CityId) REFERENCES City(CityId)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+go
